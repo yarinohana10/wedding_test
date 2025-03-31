@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&family=Heebo:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,19 +38,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -96,6 +92,52 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-wedding-light text-wedding-dark font-assistant;
+    direction: rtl;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heebo font-bold;
+  }
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #F9F5F2 0%, #F0B6BC 100%);
+}
+
+.card-shadow {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.countdown-item {
+  @apply bg-white rounded-lg p-4 flex flex-col items-center justify-center min-w-[70px] min-h-[80px] card-shadow;
+}
+
+.divider-heart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.divider-heart::before, 
+.divider-heart::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #F0B6BC;
+}
+
+.divider-heart::before {
+  margin-left: 20px;
+}
+
+.divider-heart::after {
+  margin-right: 20px;
+}
+
+@media (max-width: 640px) {
+  .countdown-item {
+    @apply min-w-[60px] min-h-[70px] p-3;
   }
 }
