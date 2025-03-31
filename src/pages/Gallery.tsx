@@ -1,8 +1,7 @@
-
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Gallery as GalleryIcon, Heart } from 'lucide-react';
+import { Images, Heart } from 'lucide-react';
 
 const Gallery = () => {
   // Sample gallery images - in a real app these would come from a database
@@ -18,29 +17,29 @@ const Gallery = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-grow pt-24 pb-16 gradient-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10">
               <div className="flex items-center justify-center mb-4">
-                <GalleryIcon className="text-wedding-primary mr-2" size={28} />
+                <Images className="text-wedding-primary mr-2" size={28} />
                 <h1 className="text-3xl md:text-4xl font-bold">הגלריה שלנו</h1>
               </div>
               <p className="text-gray-600">רגעים מיוחדים שאנחנו רוצים לשתף איתכם</p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {images.map((image) => (
-                <div 
-                  key={image.id} 
+                <div
+                  key={image.id}
                   className="overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group"
                 >
                   <div className="relative aspect-w-3 aspect-h-2">
-                    <img 
-                      src={image.src} 
-                      alt={image.alt} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <Heart className="text-white h-10 w-10" />
@@ -52,7 +51,7 @@ const Gallery = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
