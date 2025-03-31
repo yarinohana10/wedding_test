@@ -26,9 +26,10 @@ const Navbar = () => {
             <Link to="/rsvp" className="text-wedding-dark hover:text-wedding-accent transition">אישור הגעה</Link>
             <Link to="/gallery" className="text-wedding-dark hover:text-wedding-accent transition">גלריה</Link>
             <Link to="/location" className="text-wedding-dark hover:text-wedding-accent transition">מיקום האירוע</Link>
-            <Link to="/dashboard" className="text-wedding-dark hover:text-wedding-accent transition">ניהול</Link>
-            <Button variant="outline" className="border-wedding-primary text-wedding-primary hover:bg-wedding-primary hover:text-white">
-              כניסת אדמין
+            <Button variant="outline" className="border-wedding-primary text-wedding-primary hover:bg-wedding-primary hover:text-white" asChild>
+              <Link to="/login">
+                איזור חתן כלה
+              </Link>
             </Button>
           </div>
 
@@ -76,19 +77,15 @@ const Navbar = () => {
             >
               מיקום האירוע
             </Link>
-            <Link 
-              to="/dashboard" 
-              className="block py-2 text-wedding-dark hover:text-wedding-accent"
-              onClick={() => setIsOpen(false)}
-            >
-              ניהול
-            </Link>
             <Button 
               variant="outline" 
               className="border-wedding-primary text-wedding-primary hover:bg-wedding-primary hover:text-white w-full"
               onClick={() => setIsOpen(false)}
+              asChild
             >
-              כניסת אדמין
+              <Link to="/login">
+                איזור חתן כלה
+              </Link>
             </Button>
           </div>
         </div>

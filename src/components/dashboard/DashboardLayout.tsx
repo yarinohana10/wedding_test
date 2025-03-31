@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import React from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { SidebarNav } from './SidebarNav';
 import { 
   UsersRound, 
@@ -9,6 +9,7 @@ import {
   Settings, 
   LogOut 
 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 export interface NavItem {
   title: string;
@@ -40,6 +41,19 @@ const dashboardNavItems: NavItem[] = [
 ];
 
 const DashboardLayout = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    // In a real app, this would clear authentication state, tokens, etc.
+    toast({
+      title: "התנתקות מוצלחת",
+      description: "הועברת לדף הבית",
+    });
+    
+    navigate('/');
+  };
+
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-white lg:block">
@@ -51,7 +65,10 @@ const DashboardLayout = () => {
             <SidebarNav items={dashboardNavItems} />
           </div>
           <div className="mt-auto p-4">
-            <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted">
+            <button 
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
+              onClick={handleLogout}
+            >
               <LogOut className="h-4 w-4" />
               <span>התנתקות</span>
             </button>
