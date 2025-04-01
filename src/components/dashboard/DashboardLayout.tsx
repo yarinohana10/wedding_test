@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Outlet, useNavigate, Link } from 'react-router-dom';
+import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { SidebarNav } from './SidebarNav';
 import { 
   UsersRound, 
@@ -15,6 +15,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface NavItem {
   title: string;
@@ -48,7 +49,9 @@ const dashboardNavItems: NavItem[] = [
 const DashboardLayout = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleLogout = () => {
     // In a real app, this would clear authentication state, tokens, etc.
@@ -60,6 +63,8 @@ const DashboardLayout = () => {
     navigate('/');
   };
 
+  const isSettingsPage = location.pathname === "/dashboard/settings";
+
   const previewHomePage = () => {
     window.open('/', '_blank');
   };
@@ -70,15 +75,17 @@ const DashboardLayout = () => {
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <span className="font-medium">ניהול אירוע</span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="mr-auto" 
-              onClick={previewHomePage}
-            >
-              <ExternalLink className="h-4 w-4 ml-1" />
-              <span>תצוגה מקדימה</span>
-            </Button>
+            {isSettingsPage && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="mr-auto" 
+                onClick={previewHomePage}
+              >
+                <ExternalLink className="h-4 w-4 ml-1" />
+                <span>תצוגה מקדימה</span>
+              </Button>
+            )}
           </div>
           <div className="flex-1 overflow-auto py-2">
             <SidebarNav items={dashboardNavItems} />
@@ -116,11 +123,16 @@ const DashboardLayout = () => {
                 <nav className="grid gap-2 px-2">
                   {dashboardNavItems.map((item, index) => {
                     const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
                     return (
                       <Link
                         key={index}
                         to={item.href}
-                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
+                          isActive 
+                            ? 'bg-muted text-foreground font-medium' 
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
                         onClick={() => setOpen(false)}
                       >
                         <Icon className="h-4 w-4" />
@@ -131,18 +143,20 @@ const DashboardLayout = () => {
                 </nav>
               </div>
               <div className="mt-auto p-4 border-t">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mb-4 w-full justify-start" 
-                  onClick={() => {
-                    previewHomePage();
-                    setOpen(false);
-                  }}
-                >
-                  <ExternalLink className="h-4 w-4 ml-2" />
-                  <span>תצוגה מקדימה</span>
-                </Button>
+                {isSettingsPage && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mb-4 w-full justify-start" 
+                    onClick={() => {
+                      previewHomePage();
+                      setOpen(false);
+                    }}
+                  >
+                    <ExternalLink className="h-4 w-4 ml-2" />
+                    <span>תצוגה מקדימה</span>
+                  </Button>
+                )}
                 <button 
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
                   onClick={() => {
@@ -158,14 +172,16 @@ const DashboardLayout = () => {
           </SheetContent>
         </Sheet>
         <span className="font-medium">ניהול אירוע</span>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={previewHomePage}
-        >
-          <ExternalLink className="h-4 w-4 ml-1" />
-          <span className="sr-only md:not-sr-only">תצוגה מקדימה</span>
-        </Button>
+        {isSettingsPage && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={previewHomePage}
+          >
+            <ExternalLink className="h-4 w-4 ml-1" />
+            <span className="sr-only md:not-sr-only">תצוגה מקדימה</span>
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col lg:pt-0 pt-14">
