@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/landing/HeroSection';
 import Countdown from '@/components/landing/Countdown';
 import EventDetails from '@/components/landing/EventDetails';
+import VenueMap from '@/components/landing/VenueMap';
 
 const Index = () => {
   // Sample data - in a real app this would come from your backend
@@ -15,7 +16,11 @@ const Index = () => {
     address: "רחוב הפרחים 123, תל אביב",
     time: "19:00",
     // Date is set to August 12, 2024 19:00 Israel time
-    targetDate: new Date(2024, 7, 12, 19, 0, 0)
+    targetDate: new Date(2024, 7, 12, 19, 0, 0),
+    coordinates: {
+      lat: 32.0853,
+      lng: 34.7818
+    }
   };
 
   return (
@@ -48,6 +53,12 @@ const Index = () => {
             />
           </div>
         </section>
+
+        {/* Map Section */}
+        <VenueMap 
+          address={weddingData.address} 
+          coordinates={weddingData.coordinates}
+        />
       </main>
       
       <Footer />

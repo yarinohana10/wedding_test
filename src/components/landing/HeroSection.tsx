@@ -12,7 +12,7 @@ interface HeroSectionProps {
 const HeroSection: React.FC<HeroSectionProps> = ({ 
   coupleName,
   date,
-  heroImage = "https://images.unsplash.com/photo-1511285560929-80b456503681?ixlib=rb-4.0.3&auto=format&fit=crop&w=1769&q=80"
+  heroImage = "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
 }) => {
   return (
     <div className="min-h-[90vh] flex items-center justify-center relative overflow-hidden">
