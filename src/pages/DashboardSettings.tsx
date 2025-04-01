@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Settings, Save, Upload, Clock, MapPin, Calendar } from "lucide-react";
+import { Settings, Save, Upload, Clock, MapPin, Calendar, ExternalLink } from "lucide-react";
 
 const DashboardSettings = () => {
   const { toast } = useToast();
@@ -15,6 +15,8 @@ const DashboardSettings = () => {
     time: "19:00",
     venue: "אולמי הגן הקסום",
     address: "רחוב הפרחים 123, תל אביב",
+    lat: "32.0853",
+    lng: "34.7818",
   });
 
   const [heroImage, setHeroImage] = useState<File | null>(null);
@@ -77,13 +79,23 @@ const DashboardSettings = () => {
     }
   };
 
+  const openPreview = () => {
+    window.open('/', '_blank');
+  };
+
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">הגדרות</h1>
-        <p className="text-muted-foreground">
-          עדכון פרטי האירוע והעלאת תמונות
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">הגדרות</h1>
+          <p className="text-muted-foreground">
+            עדכון פרטי האירוע והעלאת תמונות
+          </p>
+        </div>
+        <Button onClick={openPreview} className="flex items-center gap-2">
+          <ExternalLink className="h-4 w-4" />
+          <span className="hidden md:inline">תצוגה מקדימה</span>
+        </Button>
       </div>
 
       <Card>
@@ -172,12 +184,43 @@ const DashboardSettings = () => {
                     />
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">קו רוחב (Latitude)</label>
+                  <Input
+                    name="lat"
+                    value={eventDetails.lat}
+                    onChange={handleEventDetailsChange}
+                    placeholder="32.0853"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">קו אורך (Longitude)</label>
+                  <Input
+                    name="lng"
+                    value={eventDetails.lng}
+                    onChange={handleEventDetailsChange}
+                    placeholder="34.7818"
+                  />
+                </div>
               </div>
               
-              <Button onClick={handleSaveEventDetails} className="flex items-center gap-2 mt-4">
-                <Save className="h-4 w-4" />
-                <span>שמור שינויים</span>
-              </Button>
+              <div className="flex items-center gap-4 justify-between">
+                <Button onClick={handleSaveEventDetails} className="flex items-center gap-2 mt-4">
+                  <Save className="h-4 w-4" />
+                  <span>שמור שינויים</span>
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={openPreview} 
+                  className="flex items-center gap-2 mt-4"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>צפה בדף הבית</span>
+                </Button>
+              </div>
             </TabsContent>
             
             <TabsContent value="hero-image" className="space-y-4">
@@ -201,10 +244,21 @@ const DashboardSettings = () => {
                   </div>
                 )}
                 
-                <Button onClick={handleSaveHeroImage} className="flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  <span>העלה תמונה</span>
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Button onClick={handleSaveHeroImage} className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    <span>העלה תמונה</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={openPreview} 
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>צפה בדף הבית</span>
+                  </Button>
+                </div>
               </div>
             </TabsContent>
             
@@ -230,10 +284,21 @@ const DashboardSettings = () => {
                   </div>
                 )}
                 
-                <Button onClick={handleSaveGalleryImages} className="flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  <span>העלה תמונות</span>
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Button onClick={handleSaveGalleryImages} className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    <span>העלה תמונות</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => window.open('/gallery', '_blank')} 
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    <span>צפה בגלריה</span>
+                  </Button>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

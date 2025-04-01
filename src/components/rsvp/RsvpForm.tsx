@@ -21,11 +21,13 @@ import {
   FormMessage
 } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { Heart, CheckCircle2 } from 'lucide-react';
+import { Heart, CheckCircle2, Navigation } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface FormValues {
   fullName: string;
   phoneNumber: string;
+  attending: string;
   guests: string;
   foodPreference: string;
 }
@@ -45,10 +47,13 @@ const RsvpForm = () => {
     defaultValues: {
       fullName: '',
       phoneNumber: '',
+      attending: 'yes',
       guests: '1',
       foodPreference: 'regular',
     },
   });
+
+  const attending = form.watch('attending');
 
   const onSubmit = (data: FormValues) => {
     console.log(data);
@@ -58,8 +63,10 @@ const RsvpForm = () => {
     setTimeout(() => {
       setIsSubmitted(true);
       toast({
-        title: "אישור הגעה נשלח בהצלחה!",
-        description: "תודה שאישרת את הגעתך לאירוע.",
+        title: attending === 'yes' ? "אישור הגעה נשלח בהצלחה!" : "תודה על העדכון",
+        description: attending === 'yes' 
+          ? "תודה שאישרת את הגעתך לאירוע." 
+          : "קיבלנו את הודעתך שלא תוכל להגיע. נתראה בשמחות אחרות!",
       });
     }, 1000);
   };
@@ -70,15 +77,20 @@ const RsvpForm = () => {
         <div className="flex justify-center mb-6">
           <CheckCircle2 className="h-16 w-16 text-green-500" />
         </div>
-        <h2 className="text-2xl font-bold mb-4">תודה שאישרת הגעה!</h2>
+        <h2 className="text-2xl font-bold mb-4">תודה על העדכון!</h2>
         <p className="text-gray-600 mb-6">
-          אנו מצפים לראותך באירוע. פרטי האירוע ישלחו אליך בהודעת SMS.
+          {attending === 'yes' 
+            ? "אנו מצפים לראותך באירוע. פרטי האירוע ישלחו אליך בהודעת SMS." 
+            : "קיבלנו את הודעתך שלא תוכל להגיע. נתראה בשמחות אחרות!"}
         </p>
         <Button 
-          onClick={() => setIsSubmitted(false)}
-          className="bg-wedding-primary hover:bg-wedding-accent text-white"
+          asChild
+          className="bg-wedding-primary hover:bg-wedding-accent text-white flex items-center gap-2"
         >
-          חזרה לטופס
+          <Link to="/location">
+            <Navigation className="h-4 w-4" />
+            <span>ניווט למקום האירוע</span>
+          </Link>
         </Button>
       </div>
     );
@@ -90,8 +102,7 @@ const RsvpForm = () => {
         <div className="divider-heart mb-4">
           <Heart className="text-wedding-primary" size={24} />
         </div>
-        <h2 className="text-2xl font-bold mb-2">אישור הגעה</h2>
-        <p className="text-gray-600 text-sm">אנא מלאו את הפרטים הבאים</p>
+        <h2 className="text-2xl font-bold mb-4">אישור השתתפות</h2>
       </div>
 
       <Form {...form}>
@@ -137,25 +148,22 @@ const RsvpForm = () => {
 
           <FormField
             control={form.control}
-            name="guests"
+            name="attending"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>מספר אורחים</FormLabel>
+                <FormLabel>האם תגיע/י לאירוע?</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="בחר מספר אורחים" />
+                      <SelectValue placeholder="בחר אפשרות" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="yes">כן, אגיע</SelectItem>
+                    <SelectItem value="no">לא אוכל להגיע</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -163,39 +171,71 @@ const RsvpForm = () => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="foodPreference"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>העדפות אוכל</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="בחר העדפת אוכל" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {foodOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {attending === 'yes' && (
+            <>
+              <FormField
+                control={form.control}
+                name="guests"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>מספר אורחים</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר מספר אורחים" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <SelectItem key={num} value={num.toString()}>
+                            {num}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="foodPreference"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>העדפות אוכל</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="בחר העדפת אוכל" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {foodOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
 
           <Button 
             type="submit" 
             className="w-full bg-wedding-primary hover:bg-wedding-accent text-white"
           >
-            אישור הגעה
+            {attending === 'yes' ? 'אישור הגעה' : 'שליחת תשובה'}
           </Button>
         </form>
       </Form>

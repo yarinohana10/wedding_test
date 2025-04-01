@@ -12,11 +12,6 @@ const Rsvp = () => {
       <main className="flex-grow pt-24 pb-16 gradient-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-10">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">אישור הגעה</h1>
-              <p className="text-gray-600">נשמח לראותכם באירוע שלנו!</p>
-            </div>
-            
             <RsvpForm />
           </div>
         </div>

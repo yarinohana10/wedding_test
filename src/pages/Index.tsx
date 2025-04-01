@@ -5,7 +5,6 @@ import Footer from '@/components/layout/Footer';
 import HeroSection from '@/components/landing/HeroSection';
 import Countdown from '@/components/landing/Countdown';
 import EventDetails from '@/components/landing/EventDetails';
-import VenueMap from '@/components/landing/VenueMap';
 
 const Index = () => {
   // Sample data - in a real app this would come from your backend
@@ -42,7 +41,7 @@ const Index = () => {
           </div>
         </section>
         
-        {/* Event Details Section */}
+        {/* Event Details Section with Map */}
         <section className="py-16 gradient-bg">
           <div className="container mx-auto px-4">
             <EventDetails 
@@ -50,15 +49,10 @@ const Index = () => {
               address={weddingData.address}
               date={weddingData.date}
               time={weddingData.time}
+              coordinates={weddingData.coordinates}
             />
           </div>
         </section>
-
-        {/* Map Section */}
-        <VenueMap 
-          address={weddingData.address} 
-          coordinates={weddingData.coordinates}
-        />
       </main>
       
       <Footer />
