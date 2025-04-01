@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Menu, X } from 'lucide-react';
+import { Heart, Menu, X, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Navbar = () => {
@@ -16,7 +16,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <Heart className="h-6 w-6 text-wedding-primary mr-2" />
+            <Heart className="h-6 w-6 text-wedding-primary mr-2 animate-pulse-slow" />
             <span className="font-heebo font-bold text-lg text-wedding-dark">Wedding Joy</span>
           </Link>
 
@@ -26,6 +26,13 @@ const Navbar = () => {
             <Link to="/rsvp" className="text-wedding-dark hover:text-wedding-accent transition">אישור הגעה</Link>
             <Link to="/gallery" className="text-wedding-dark hover:text-wedding-accent transition">גלריה</Link>
             <Link to="/location" className="text-wedding-dark hover:text-wedding-accent transition">מיקום האירוע</Link>
+            <Link
+              to="/gift"
+              className="inline-flex items-center gap-2 text-wedding-primary hover:text-wedding-accent font-medium transition-colors"
+            >
+              <Gift size={18} />
+              <span>השאירו מתנה</span>
+            </Link>
             <Button variant="outline" className="border-wedding-primary text-wedding-primary hover:bg-wedding-primary hover:text-white" asChild>
               <Link to="/login">
                 איזור חתן כלה
@@ -76,6 +83,14 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               מיקום האירוע
+            </Link>
+            <Link 
+              to="/gift"
+              className="flex items-center py-2 text-wedding-primary hover:text-wedding-accent"
+              onClick={() => setIsOpen(false)}
+            >
+              <Gift size={18} className="ml-2" />
+              <span>השאירו מתנה</span>
             </Link>
             <Button 
               variant="outline" 

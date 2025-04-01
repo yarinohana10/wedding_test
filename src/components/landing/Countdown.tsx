@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CalendarHeart } from 'lucide-react';
 
 interface CountdownProps {
@@ -13,15 +13,56 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
     minutes: 0,
     seconds: 0
   });
+  
+  const requestRef = useRef<number>();
+  const previousTimeRef = useRef<number>();
+
+  const animate = (time: number) => {
+    if (previousTimeRef.current !== undefined) {
+      // בדיקה אם עברה לפחות שנייה מהעדכון האחרון
+      if (time - previousTimeRef.current >= 1000) {
+        const now = new Date();
+        const difference = targetDate.getTime() - now.getTime();
+        
+        if (difference > 0) {
+          // חישוב ימים, שעות, דקות ושניות
+          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+          
+          setTimeLeft({
+            days,
+            hours,
+            minutes,
+            seconds
+          });
+        } else {
+          // אם תאריך היעד עבר, הגדר את כל הערכים ל-0
+          setTimeLeft({
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0
+          });
+        }
+        
+        previousTimeRef.current = time;
+      }
+    } else {
+      previousTimeRef.current = time;
+    }
+    
+    requestRef.current = requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
-    // Function to calculate time difference
+    // חישוב ראשוני של הזמן שנותר
     const calculateTimeLeft = () => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
       
       if (difference > 0) {
-        // Calculate days, hours, minutes and seconds
         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -33,25 +74,17 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
           minutes,
           seconds
         });
-      } else {
-        // If the target date has passed, set all values to 0
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0
-        });
       }
     };
 
-    // Calculate immediately
     calculateTimeLeft();
+    requestRef.current = requestAnimationFrame(animate);
     
-    // Update the countdown every second
-    const timer = setInterval(calculateTimeLeft, 1000);
-
-    // Cleanup interval on component unmount
-    return () => clearInterval(timer);
+    return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
   }, [targetDate]);
 
   return (

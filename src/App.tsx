@@ -15,6 +15,7 @@ import DashboardLayout from "./components/dashboard/DashboardLayout";
 import DashboardGuests from "./pages/DashboardGuests";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardSettings from "./pages/DashboardSettings";
+import Gift from "./pages/Gift";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/location" element={<Location />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/gift" element={<Gift />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>

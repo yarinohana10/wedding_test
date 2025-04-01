@@ -22,6 +22,63 @@ const EventDetails: React.FC<EventDetailsProps> = ({
   time,
   coordinates
 }) => {
+  // פונקציה ליצירת קישור ל-Google Calendar
+  const createGoogleCalendarLink = () => {
+    // המר את תאריך האירוע למבנה ISO לקישור גוגל
+    const eventDate = new Date(2024, 7, 12, 19, 0, 0);
+    const endDate = new Date(2024, 7, 12, 23, 59, 0);
+    
+    const startTimeISO = eventDate.toISOString().replace(/-|:|\.\d+/g, '');
+    const endTimeISO = endDate.toISOString().replace(/-|:|\.\d+/g, '');
+    
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=חתונה%20של%20דנה%20ויוסי&dates=${startTimeISO}/${endTimeISO}&details=אנחנו%20מתחתנים!%20נשמח%20לראותכם%20בשמחתנו.&location=${encodeURIComponent(address)}&ctz=Asia/Jerusalem`;
+  };
+
+  // פונקציה ליצירת קובץ iCal להורדה
+  const createICalFile = () => {
+    const eventDate = new Date(2024, 7, 12, 19, 0, 0);
+    const endDate = new Date(2024, 7, 12, 23, 59, 0);
+    
+    const startTimeISO = eventDate.toISOString().replace(/-|:|\.\d+/g, '').slice(0, -1);
+    const endTimeISO = endDate.toISOString().replace(/-|:|\.\d+/g, '').slice(0, -1);
+    
+    const iCalData = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Wedding Joy//NONSGML v1.0//EN',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      `DTSTART;TZID=Asia/Jerusalem:${startTimeISO}`,
+      `DTEND;TZID=Asia/Jerusalem:${endTimeISO}`,
+      `SUMMARY:חתונה של דנה ויוסי`,
+      `DESCRIPTION:אנחנו מתחתנים! נשמח לראותכם בשמחתנו.`,
+      `LOCATION:${address}`,
+      'STATUS:CONFIRMED',
+      'SEQUENCE:0',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT24H',
+      'DESCRIPTION:התראה לפני האירוע',
+      'ACTION:DISPLAY',
+      'END:VALARM',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\n');
+    
+    const blob = new Blob([iCalData], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    // יצירת אלמנט קישור והפעלת הורדה
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'wedding-invitation.ics');
+    document.body.appendChild(link);
+    link.click();
+    
+    // ניקוי
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-white rounded-xl p-6 shadow-md max-w-4xl mx-auto overflow-hidden">
       <div className="flex items-center justify-center mb-6">
@@ -44,15 +101,27 @@ const EventDetails: React.FC<EventDetailsProps> = ({
             <div>
               <p className="font-bold text-wedding-dark">תאריך האירוע</p>
               <p className="text-gray-600">{date}</p>
-              <div className="mt-2">
+              <div className="mt-3 flex gap-2">
                 <a
-                  href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=חתונה&dates=20240812T190000/20240812T235900&details=אנחנו מתחתנים! נשמח לראותכם בשמחתנו.&location=${encodeURIComponent(address)}`}
+                  href={createGoogleCalendarLink()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:text-blue-800 underline inline-flex items-center"
+                  className="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors inline-flex items-center"
                 >
-                  <span>הוסף ליומן</span>
+                  <img src="https://www.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_31_2x.png" 
+                       alt="Google Calendar" 
+                       className="w-4 h-4 ml-1" />
+                  <span>הוסף ליומן Google</span>
                 </a>
+                <button
+                  onClick={createICalFile}
+                  className="text-sm bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600 transition-colors inline-flex items-center"
+                >
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/iOS_Calendar_Icon.png" 
+                       alt="iCal" 
+                       className="w-4 h-4 ml-1" />
+                  <span>הורד ל-iCal</span>
+                </button>
               </div>
             </div>
           </div>
