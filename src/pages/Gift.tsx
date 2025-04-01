@@ -2,7 +2,7 @@
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Gift, CreditCard, Wallet, Bank } from 'lucide-react';
+import { Gift, CreditCard, Wallet, Building } from 'lucide-react';
 
 const GiftPage = () => {
   return (
@@ -51,7 +51,7 @@ const GiftPage = () => {
             
             <div className="bg-white p-8 rounded-xl shadow-md text-center">
               <div className="flex items-center justify-center mb-4">
-                <Bank className="text-wedding-primary mr-2" size={24} />
+                <Building className="text-wedding-primary mr-2" size={24} />
                 <h2 className="text-xl font-bold text-wedding-dark">מתנות פיזיות</h2>
               </div>
               <p className="text-gray-600">
