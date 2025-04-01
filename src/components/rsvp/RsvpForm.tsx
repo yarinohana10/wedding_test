@@ -3,14 +3,6 @@ import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import { 
   Form,
   FormControl,
@@ -20,8 +12,9 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from 'react-hook-form';
-import { Heart, CheckCircle2, Navigation } from 'lucide-react';
+import { Heart, CheckCircle2, X, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface FormValues {
@@ -47,7 +40,7 @@ const RsvpForm = () => {
     defaultValues: {
       fullName: '',
       phoneNumber: '',
-      attending: 'yes',
+      attending: '',
       guests: '1',
       foodPreference: 'regular',
     },
@@ -63,8 +56,8 @@ const RsvpForm = () => {
     setTimeout(() => {
       setIsSubmitted(true);
       toast({
-        title: attending === 'yes' ? "אישור הגעה נשלח בהצלחה!" : "תודה על העדכון",
-        description: attending === 'yes' 
+        title: data.attending === 'yes' ? "אישור הגעה נשלח בהצלחה!" : "תודה על העדכון",
+        description: data.attending === 'yes' 
           ? "תודה שאישרת את הגעתך לאירוע." 
           : "קיבלנו את הודעתך שלא תוכל להגיע. נתראה בשמחות אחרות!",
       });
@@ -87,9 +80,16 @@ const RsvpForm = () => {
           asChild
           className="bg-wedding-primary hover:bg-wedding-accent text-white flex items-center gap-2"
         >
-          <Link to="/location">
-            <Navigation className="h-4 w-4" />
-            <span>ניווט למקום האירוע</span>
+          <Link to={attending === 'yes' ? "/location" : "/gallery"}>
+            {attending === 'yes' ? (
+              <>
+                <span>ניווט למקום האירוע</span>
+              </>
+            ) : (
+              <>
+                <span>צפה בגלריה</span>
+              </>
+            )}
           </Link>
         </Button>
       </div>
@@ -100,7 +100,7 @@ const RsvpForm = () => {
     <div className="bg-white rounded-xl p-8 shadow-md max-w-md mx-auto">
       <div className="text-center mb-6">
         <div className="divider-heart mb-4">
-          <Heart className="text-wedding-primary" size={24} />
+          <Heart className="text-wedding-primary" size={24} fill="currentColor" />
         </div>
         <h2 className="text-2xl font-bold mb-4">אישור השתתפות</h2>
       </div>
@@ -146,30 +146,29 @@ const RsvpForm = () => {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="attending"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>האם תגיע/י לאירוע?</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
+          {attending === '' && (
+            <div className="pt-4">
+              <p className="text-center mb-4 font-medium">האם תוכל/י להגיע לאירוע?</p>
+              <div className="flex gap-4 justify-center">
+                <Button
+                  type="button"
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2"
+                  onClick={() => form.setValue('attending', 'yes')}
                 >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="בחר אפשרות" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="yes">כן, אגיע</SelectItem>
-                    <SelectItem value="no">לא אוכל להגיע</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <ThumbsUp size={18} />
+                  <span>אגיע בשמחה</span>
+                </Button>
+                <Button
+                  type="button"
+                  className="flex-1 bg-gray-400 hover:bg-gray-500 text-white flex items-center justify-center gap-2"
+                  onClick={() => form.setValue('attending', 'no')}
+                >
+                  <ThumbsDown size={18} />
+                  <span>לא אוכל להגיע</span>
+                </Button>
+              </div>
+            </div>
+          )}
 
           {attending === 'yes' && (
             <>
@@ -179,23 +178,24 @@ const RsvpForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>מספר אורחים</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="בחר מספר אורחים" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-wrap gap-2 pt-2"
+                      >
                         {[1, 2, 3, 4, 5].map((num) => (
-                          <SelectItem key={num} value={num.toString()}>
-                            {num}
-                          </SelectItem>
+                          <FormItem key={num} className="flex items-center space-x-2 space-x-reverse">
+                            <FormControl>
+                              <RadioGroupItem value={num.toString()} id={`guests-${num}`} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer" htmlFor={`guests-${num}`}>
+                              {num}
+                            </FormLabel>
+                          </FormItem>
                         ))}
-                      </SelectContent>
-                    </Select>
+                      </RadioGroup>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -207,23 +207,24 @@ const RsvpForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>העדפות אוכל</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="בחר העדפת אוכל" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1 pt-1"
+                      >
                         {foodOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
+                          <FormItem key={option.value} className="flex items-center space-x-2 space-x-reverse">
+                            <FormControl>
+                              <RadioGroupItem value={option.value} id={`food-${option.value}`} />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer" htmlFor={`food-${option.value}`}>
+                              {option.label}
+                            </FormLabel>
+                          </FormItem>
                         ))}
-                      </SelectContent>
-                    </Select>
+                      </RadioGroup>
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -231,12 +232,26 @@ const RsvpForm = () => {
             </>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full bg-wedding-primary hover:bg-wedding-accent text-white"
-          >
-            {attending === 'yes' ? 'אישור הגעה' : 'שליחת תשובה'}
-          </Button>
+          {attending && (
+            <div className="pt-4 flex items-center justify-between">
+              <Button 
+                type="button" 
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={() => form.setValue('attending', '')}
+              >
+                <X size={16} />
+                <span>שינוי בחירה</span>
+              </Button>
+              
+              <Button 
+                type="submit" 
+                className="bg-wedding-primary hover:bg-wedding-accent text-white min-w-32"
+              >
+                {attending === 'yes' ? 'אישור הגעה' : 'שליחת תשובה'}
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

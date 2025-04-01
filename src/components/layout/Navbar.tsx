@@ -16,14 +16,13 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <Heart className="h-6 w-6 text-wedding-primary mr-2 animate-pulse-slow" />
+            <Heart className="h-6 w-6 text-wedding-primary mr-2 animate-pulse-slow" fill="currentColor" />
             <span className="font-heebo font-bold text-lg text-wedding-dark">Wedding Joy</span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6 space-x-reverse">
             <Link to="/" className="text-wedding-dark hover:text-wedding-accent transition">דף הבית</Link>
-            <Link to="/rsvp" className="text-wedding-dark hover:text-wedding-accent transition">אישור הגעה</Link>
             <Link to="/gallery" className="text-wedding-dark hover:text-wedding-accent transition">גלריה</Link>
             <Link to="/location" className="text-wedding-dark hover:text-wedding-accent transition">מיקום האירוע</Link>
             <Link
@@ -62,13 +61,6 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               דף הבית
-            </Link>
-            <Link 
-              to="/rsvp" 
-              className="block py-2 text-wedding-dark hover:text-wedding-accent"
-              onClick={() => setIsOpen(false)}
-            >
-              אישור הגעה
             </Link>
             <Link 
               to="/gallery" 

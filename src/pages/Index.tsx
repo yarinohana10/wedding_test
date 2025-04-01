@@ -6,26 +6,27 @@ import HeroSection from '@/components/landing/HeroSection';
 import Countdown from '@/components/landing/Countdown';
 import EventDetails from '@/components/landing/EventDetails';
 import ConfettiLoader from '@/components/effects/ConfettiLoader';
+import RsvpForm from '@/components/rsvp/RsvpForm';
 
 const Index = () => {
   const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
-    // הצג את הקונפטי רק אחרי שהדף נטען לגמרי
+    // Show confetti only after the page is fully loaded
     setShowConfetti(true);
     
-    // טיפול בתגי כותרת עבור SEO
+    // Handle title tags for SEO
     document.title = "דנה & יוסי - הזמנה לחתונה";
   }, []);
 
-  // נתוני החתונה לדוגמא - בפרויקט אמיתי נקבל זאת מהבקאנד
+  // Sample wedding data - in a real app we would get this from the backend
   const weddingData = {
     coupleName: "דנה & יוסי",
     date: "יום רביעי, 12 באוגוסט 2024",
     venue: "אולמי הגן הקסום",
     address: "רחוב הפרחים 123, תל אביב",
     time: "19:00",
-    // התאריך נקבע ל-12 באוגוסט, 2024 בשעה 19:00 בשעון ישראל
+    // Date set for August 12, 2024 at 19:00 Israel time
     targetDate: new Date(2024, 7, 12, 19, 0, 0),
     coordinates: {
       lat: 32.0853,
@@ -38,7 +39,7 @@ const Index = () => {
       {showConfetti && <ConfettiLoader />}
       <Navbar />
       
-      {/* תוכן ראשי */}
+      {/* Main content */}
       <main className="flex-grow">
         {/* Hero Section */}
         <HeroSection 
@@ -63,6 +64,15 @@ const Index = () => {
               time={weddingData.time}
               coordinates={weddingData.coordinates}
             />
+          </div>
+        </section>
+        
+        {/* RSVP Section - Integrated directly into homepage */}
+        <section className="py-16 bg-wedding-light">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto">
+              <RsvpForm />
+            </div>
           </div>
         </section>
       </main>

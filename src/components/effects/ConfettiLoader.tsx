@@ -8,7 +8,7 @@ export default function ConfettiLoader() {
   const { width, height } = useWindowSize();
 
   useEffect(() => {
-    // הפעל את הקונפטי למשך 4 שניות
+    // Run confetti for 4 seconds
     const timer = setTimeout(() => {
       setIsActive(false);
     }, 4000);
@@ -24,9 +24,11 @@ export default function ConfettiLoader() {
         width={width}
         height={height}
         recycle={false}
-        numberOfPieces={500}
+        numberOfPieces={700}
         gravity={0.2}
-        colors={['#F0B6BC', '#E8D7C3', '#D4AF7A', '#F9F5F2', '#1A1A2E']}
+        initialVelocityY={10}
+        tweenDuration={5000}
+        colors={['#F0B6BC', '#E8D7C3', '#D4AF7A', '#F9F5F2', '#1A1A2E', '#FFD1DC', '#FFEFD5']}
       />
     </div>
   );
