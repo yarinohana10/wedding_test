@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -17,12 +17,14 @@ import {
   Search, 
   Download,
   Filter,
-  UserMinus
+  UserMinus,
+  Loader2,
+  X
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -56,8 +58,17 @@ const DashboardGuests = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
+
+  // Summary stats
+  const [summary, setSummary] = useState({
+    attending: 0,
+    notAttending: 0,
+    pending: 0,
+    totalGuests: 0
+  });
 
   // For the new guest form
   const [newGuest, setNewGuest] = useState<Omit<Guest, 'id'>>({
@@ -67,6 +78,20 @@ const DashboardGuests = () => {
     status: "טרם אישר",
     food: "-"
   });
+
+  useEffect(() => {
+    // Update summary stats when guests change
+    const attending = guests.filter(g => g.status === "אישר הגעה");
+    const notAttending = guests.filter(g => g.status === "לא מגיע");
+    const pending = guests.filter(g => g.status === "טרם אישר");
+    
+    setSummary({
+      attending: attending.length,
+      notAttending: notAttending.length,
+      pending: pending.length,
+      totalGuests: attending.reduce((acc, g) => acc + g.guests, 0)
+    });
+  }, [guests]);
 
   // Filter guests based on search term and status filter
   const filteredGuests = guests.filter(guest => {
@@ -134,11 +159,16 @@ const DashboardGuests = () => {
   };
 
   const exportToExcel = () => {
-    // In a real app, this would generate and download an Excel file
-    toast({
-      title: "ייצוא לאקסל",
-      description: "רשימת המוזמנים יוצאה לקובץ אקסל בהצלחה",
-    });
+    setIsExporting(true);
+    
+    // Simulate export delay
+    setTimeout(() => {
+      setIsExporting(false);
+      toast({
+        title: "ייצוא לאקסל",
+        description: "רשימת המוזמנים יוצאה לקובץ אקסל בהצלחה",
+      });
+    }, 2000);
   };
 
   // Get status color class
@@ -192,11 +222,66 @@ const DashboardGuests = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
+      <div className="text-right">
         <h1 className="text-3xl font-bold tracking-tight">ניהול מוזמנים</h1>
         <p className="text-muted-foreground">
           רשימת המוזמנים לאירוע
         </p>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <Card className="p-4">
+          <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+              <span className="text-green-800 text-xl font-bold">{summary.attending}</span>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{summary.totalGuests}</p>
+              <p className="text-sm text-gray-500">סה"כ אורחים</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="p-4">
+          <h3 className="text-lg font-medium text-right">לא מגיעים</h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+              <UserMinus className="h-6 w-6 text-red-800" />
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{summary.notAttending}</p>
+              <p className="text-sm text-gray-500">אנשים</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="p-4">
+          <h3 className="text-lg font-medium text-right">טרם אישרו</h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+              <span className="text-amber-800 text-xl font-bold">{summary.pending}</span>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{Math.round(summary.pending / (summary.attending + summary.notAttending + summary.pending) * 100 || 0)}%</p>
+              <p className="text-sm text-gray-500">מכלל ההזמנות</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="p-4">
+          <h3 className="text-lg font-medium text-right">סה"כ הזמנות</h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <span className="text-blue-800 text-xl font-bold">{guests.length}</span>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{guests.reduce((acc, guest) => acc + guest.guests, 0)}</p>
+              <p className="text-sm text-gray-500">סה"כ אנשים</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
@@ -230,12 +315,26 @@ const DashboardGuests = () => {
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" className="gap-2" onClick={exportToExcel}>
-            <Download className="h-4 w-4" />
-            <span>ייצוא לאקסל</span>
+          <Button 
+            variant="outline" 
+            className="gap-2" 
+            onClick={exportToExcel}
+            disabled={isExporting}
+          >
+            {isExporting ? (
+              <>
+                <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                <span>מייצא...</span>
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4 ml-2" />
+                <span>ייצוא לאקסל</span>
+              </>
+            )}
           </Button>
           <Button className="gap-2" onClick={() => setIsAddDialogOpen(true)}>
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 ml-2" />
             <span>הוספת מוזמן</span>
           </Button>
         </div>
@@ -308,6 +407,10 @@ const DashboardGuests = () => {
       {/* Edit Guest Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+            <X className="h-4 w-4" />
+            <span className="sr-only">סגור</span>
+          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-right">עריכת פרטי מוזמן</DialogTitle>
           </DialogHeader>
@@ -384,6 +487,10 @@ const DashboardGuests = () => {
       {/* Delete Guest Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+            <X className="h-4 w-4" />
+            <span className="sr-only">סגור</span>
+          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-right">מחיקת מוזמן</DialogTitle>
           </DialogHeader>
@@ -400,6 +507,10 @@ const DashboardGuests = () => {
       {/* Add Guest Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
+          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+            <X className="h-4 w-4" />
+            <span className="sr-only">סגור</span>
+          </DialogClose>
           <DialogHeader>
             <DialogTitle className="text-right">הוספת מוזמן חדש</DialogTitle>
           </DialogHeader>
@@ -477,3 +588,4 @@ const DashboardGuests = () => {
 };
 
 export default DashboardGuests;
+

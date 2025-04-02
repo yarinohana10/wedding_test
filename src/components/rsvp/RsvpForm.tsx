@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from 'react-hook-form';
-import { Heart, CheckCircle2, X, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Heart, CheckCircle2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 interface FormValues {
@@ -70,7 +70,7 @@ const RsvpForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-xl p-8 shadow-md text-center max-w-md mx-auto animate-fade-in">
+      <div className="bg-white rounded-xl p-8 shadow-md text-center max-w-md mx-auto animate-fade-in text-right">
         <div className="flex justify-center mb-6">
           <CheckCircle2 className="h-16 w-16 text-green-500" />
         </div>
@@ -82,15 +82,15 @@ const RsvpForm = () => {
         </p>
         <Button 
           onClick={() => attending === 'yes' ? navigate('/location') : navigate('/gallery')}
-          className="bg-wedding-primary hover:bg-wedding-accent text-white flex items-center gap-3 min-w-48 mx-auto"
+          className="bg-wedding-primary hover:bg-wedding-accent text-white flex items-center gap-3 min-w-48 mx-auto py-6 text-lg"
         >
           {attending === 'yes' ? (
             <>
-              <span className="ml-2">ניווט למקום האירוע</span>
+              <span>ניווט למקום האירוע</span>
             </>
           ) : (
             <>
-              <span className="ml-2">צפה בגלריה</span>
+              <span>צפה בגלריה</span>
             </>
           )}
         </Button>
@@ -108,7 +108,7 @@ const RsvpForm = () => {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 text-right">
           <FormField
             control={form.control}
             name="fullName"
@@ -154,18 +154,23 @@ const RsvpForm = () => {
               <div className="flex gap-4 justify-center">
                 <Button
                   type="button"
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-3"
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-3 py-6"
                   onClick={() => form.setValue('attending', 'yes')}
                 >
-                  <ThumbsUp size={18} />
+                  <ThumbsUp size={18} className="ml-2" />
                   <span>אגיע בשמחה</span>
                 </Button>
                 <Button
                   type="button"
-                  className="flex-1 bg-gray-400 hover:bg-gray-500 text-white flex items-center justify-center gap-3"
-                  onClick={() => form.setValue('attending', 'no')}
+                  className="flex-1 bg-gray-400 hover:bg-gray-500 text-white flex items-center justify-center gap-3 py-6"
+                  onClick={() => {
+                    form.setValue('attending', 'no');
+                    setTimeout(() => {
+                      form.handleSubmit(onSubmit)();
+                    }, 100);
+                  }}
                 >
-                  <ThumbsDown size={18} />
+                  <ThumbsDown size={18} className="ml-2" />
                   <span>לא אוכל להגיע</span>
                 </Button>
               </div>
@@ -274,28 +279,16 @@ const RsvpForm = () => {
                   </FormItem>
                 )}
               />
+            
+              <div className="pt-4 flex justify-end">
+                <Button 
+                  type="submit" 
+                  className="bg-wedding-primary hover:bg-wedding-accent text-white min-w-40 py-6 text-lg"
+                >
+                  אישור הגעה
+                </Button>
+              </div>
             </>
-          )}
-
-          {attending && (
-            <div className="pt-4 flex items-center justify-between">
-              <Button 
-                type="button" 
-                variant="outline"
-                className="flex items-center gap-3"
-                onClick={() => form.setValue('attending', '')}
-              >
-                <X size={16} />
-                <span>שינוי בחירה</span>
-              </Button>
-              
-              <Button 
-                type="submit" 
-                className="bg-wedding-primary hover:bg-wedding-accent text-white min-w-40 py-6 text-lg"
-              >
-                {attending === 'yes' ? 'אישור הגעה' : 'שליחת תשובה'}
-              </Button>
-            </div>
           )}
         </form>
       </Form>

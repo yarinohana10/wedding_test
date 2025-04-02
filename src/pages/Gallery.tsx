@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Images, Heart, ChevronDown, ChevronUp, Upload, X } from 'lucide-react';
+import { Images, Heart, ChevronDown, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
   Carousel, 
@@ -218,40 +218,110 @@ const Gallery = () => {
     );
   };
 
-  // Render expanded gallery grid
+  // Render expanded gallery grid with fade effect
   const renderGalleryGrid = (images: typeof preCeremonyImages, section: string) => {
+    const visibleImages = images.slice(0, 8); // Show only first 8 images
+    const hasMoreImages = images.length > 8;
+    
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-4">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group"
-          >
-            <div className="relative h-full w-full">
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="h-full w-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500"
-                onClick={() => openPreview(image.src)}
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                <div 
-                  className={`absolute bottom-2 right-2 flex items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 cursor-pointer ${userLikes[image.id] ? 'text-wedding-primary' : 'text-gray-500'}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleLike(section, image.id);
-                  }}
-                >
-                  <Heart 
-                    className="h-5 w-5 mr-1" 
-                    fill={userLikes[image.id] ? "currentColor" : "none"} 
-                  />
-                  <span className="text-xs font-medium">{image.likes}</span>
+      <div className="mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {visibleImages.map((image) => (
+            <div
+              key={image.id}
+              className="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group"
+            >
+              <div className="relative h-full w-full">
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="h-full w-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500"
+                  onClick={() => openPreview(image.src)}
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                  <div 
+                    className={`absolute bottom-2 right-2 flex items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 cursor-pointer ${userLikes[image.id] ? 'text-wedding-primary' : 'text-gray-500'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(section, image.id);
+                    }}
+                  >
+                    <Heart 
+                      className="h-5 w-5 ml-1" 
+                      fill={userLikes[image.id] ? "currentColor" : "none"} 
+                    />
+                    <span className="text-xs font-medium">{image.likes}</span>
+                  </div>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
+        
+        {hasMoreImages && !expandedSections[section as keyof typeof expandedSections] && (
+          <div className="relative mt-4">
+            <div 
+              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none"
+              style={{ transform: 'rotate(180deg)' }}
+            />
+            <div className="text-center pt-6">
+              <Button
+                onClick={() => toggleSection(section as keyof typeof expandedSections)}
+                variant="outline"
+                className="bg-white shadow hover:shadow-md rounded-full px-6 py-2 mt-2"
+              >
+                הצג את כל {images.length} התמונות
+              </Button>
+            </div>
           </div>
-        ))}
+        )}
+        
+        {expandedSections[section as keyof typeof expandedSections] && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+            {images.slice(8).map((image) => (
+              <div
+                key={image.id}
+                className="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group"
+              >
+                <div className="relative h-full w-full">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="h-full w-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500"
+                    onClick={() => openPreview(image.src)}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                    <div 
+                      className={`absolute bottom-2 right-2 flex items-center bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 cursor-pointer ${userLikes[image.id] ? 'text-wedding-primary' : 'text-gray-500'}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLike(section, image.id);
+                      }}
+                    >
+                      <Heart 
+                        className="h-5 w-5 ml-1" 
+                        fill={userLikes[image.id] ? "currentColor" : "none"} 
+                      />
+                      <span className="text-xs font-medium">{image.likes}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {expandedSections[section as keyof typeof expandedSections] && (
+          <div className="text-center mt-4">
+            <Button
+              onClick={() => toggleSection(section as keyof typeof expandedSections)}
+              variant="outline"
+              className="bg-white shadow hover:shadow-md rounded-full px-6 py-2"
+            >
+              הסתר
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -263,8 +333,6 @@ const Gallery = () => {
     images: typeof preCeremonyImages,
     sectionKey: keyof typeof expandedSections
   ) => {
-    const isExpanded = expandedSections[sectionKey];
-    
     // If no images or fewer than required, don't show section
     if (!images.length) {
       return null;
@@ -279,34 +347,17 @@ const Gallery = () => {
         
         {renderCarousel(images)}
         
-        <div className="mt-6 flex justify-center gap-4">
-          <Button
-            onClick={() => toggleSection(sectionKey)}
-            className="group bg-white shadow hover:shadow-md rounded-full px-6 py-2 flex items-center gap-2 transition-all"
-          >
-            {isExpanded ? (
-              <>
-                <span className="ml-2">הסתר תמונות</span>
-                <ChevronUp className="h-4 w-4 transition-transform group-hover:-translate-y-1" />
-              </>
-            ) : (
-              <>
-                <span className="ml-2">הצג הכל</span>
-                <ChevronDown className="h-4 w-4 transition-transform group-hover:translate-y-1" />
-              </>
-            )}
-          </Button>
-          
+        <div className="mt-6 flex justify-center gap-4">          
           <Button
             onClick={() => setUploadSection(sectionKey as any)}
             className="bg-wedding-primary text-white rounded-full px-6 py-2 flex items-center gap-2 hover:bg-wedding-accent transition-colors"
           >
-            <Upload className="h-4 w-4" />
+            <Upload className="h-4 w-4 ml-2" />
             <span>העלאת תמונה</span>
           </Button>
         </div>
         
-        {isExpanded && renderGalleryGrid(images, sectionKey)}
+        {renderGalleryGrid(images, sectionKey)}
       </section>
     );
   };
@@ -320,8 +371,8 @@ const Gallery = () => {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <div className="flex items-center justify-center mb-4">
-                <Images className="text-wedding-primary ml-2" size={28} />
                 <h1 className="text-3xl md:text-4xl font-bold">הגלריה שלנו</h1>
+                <Images className="text-wedding-primary mr-2" size={28} />
               </div>
               <p className="text-gray-600 mb-8">רגעים מיוחדים שאנחנו רוצים לשתף איתכם</p>
               <div className="max-w-2xl mx-auto">
@@ -372,12 +423,12 @@ const Gallery = () => {
       {uploadSection && (
         <Dialog open={!!uploadSection} onOpenChange={() => setUploadSection(null)}>
           <DialogContent className="sm:max-w-md">
+            <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+              <X className="h-4 w-4" />
+              <span className="sr-only">סגור</span>
+            </DialogClose>
             <DialogHeader className="flex">
               <DialogTitle className="flex-1 text-right">העלאת תמונה</DialogTitle>
-              <DialogClose className="flex-none">
-                <X className="h-5 w-5" />
-                <span className="sr-only">סגור</span>
-              </DialogClose>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="text-center">
@@ -405,7 +456,7 @@ const Gallery = () => {
       {previewImage && (
         <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
           <DialogContent className="sm:max-w-3xl p-1 bg-black/80">
-            <DialogClose className="absolute left-4 top-4 rounded-full bg-white/20 p-1 z-10">
+            <DialogClose className="absolute right-4 top-4 rounded-full bg-white/20 p-1 z-10">
               <X className="h-5 w-5 text-white" />
               <span className="sr-only">סגור</span>
             </DialogClose>
