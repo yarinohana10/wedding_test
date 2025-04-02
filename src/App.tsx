@@ -14,7 +14,6 @@ import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import DashboardGuests from "./pages/DashboardGuests";
-import DashboardMessages from "./pages/DashboardMessages";
 import DashboardSettings from "./pages/DashboardSettings";
 import Gift from "./pages/Gift";
 import Rsvp from "./pages/Rsvp";
@@ -50,7 +49,6 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Navigate to="/dashboard/guests" replace />} />
             <Route path="guests" element={<DashboardGuests />} />
-            <Route path="messages" element={<DashboardMessages />} />
             <Route path="settings" element={<DashboardSettings />} />
           </Route>
           

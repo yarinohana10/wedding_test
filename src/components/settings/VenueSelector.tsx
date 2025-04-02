@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Locate, Search } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface VenueSelectorProps {
@@ -12,113 +12,190 @@ interface VenueSelectorProps {
     lat: number;
     lng: number;
   }) => void;
+  defaultValue?: string;
 }
 
-// Sample venue data - in a real app this would come from an API
-const sampleVenues = [
-  { 
-    id: 1,
-    name: 'אולמי הגן הקסום',
-    address: 'רחוב הפרחים 123, תל אביב',
-    lat: 32.0853,
-    lng: 34.7818
-  },
-  { 
-    id: 2,
-    name: 'אולמי השרון',
-    address: 'דרך השרון 45, הרצליה',
-    lat: 32.1624,
-    lng: 34.8447
-  },
-  { 
-    id: 3,
-    name: 'אחוזת רונית',
-    address: 'רחוב האלון 78, רעננה',
-    lat: 32.1836,
-    lng: 34.8702
-  },
-  { 
-    id: 4,
-    name: 'גני האביב',
-    address: 'רחוב הדקל 15, ראשון לציון',
-    lat: 31.9730,
-    lng: 34.7925
-  },
-  { 
-    id: 5,
-    name: 'אולמי רויאל',
-    address: 'שדרות ירושלים 32, חולון',
-    lat: 32.0167,
-    lng: 34.7795
-  }
-];
-
-const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<typeof sampleVenues>([]);
-  const [showResults, setShowResults] = useState(false);
+const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultValue }) => {
+  const [searchQuery, setSearchQuery] = useState(defaultValue || '');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const { toast } = useToast();
-
-  const handleSearch = () => {
+  
+  useEffect(() => {
+    // Load Google Maps API script dynamically
+    const loadGoogleMapsScript = () => {
+      const googleMapsApiKey = 'REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=initAutocomplete`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+      
+      // Expose initAutocomplete to the window object
+      window.initAutocomplete = initAutocomplete;
+      
+      return () => {
+        document.head.removeChild(script);
+        delete window.initAutocomplete;
+      };
+    };
+    
+    if (!window.google) {
+      loadGoogleMapsScript();
+    } else {
+      initAutocomplete();
+    }
+  }, []);
+  
+  const initAutocomplete = () => {
+    if (!searchInputRef.current || !window.google) return;
+    
+    // Initialize the autocomplete
+    autocompleteRef.current = new google.maps.places.Autocomplete(searchInputRef.current, {
+      types: ['establishment'],
+      fields: ['geometry', 'name', 'formatted_address'],
+      componentRestrictions: { country: 'il' } // Restrict to Israel
+    });
+    
+    // Set the default search language to Hebrew
+    autocompleteRef.current.setOptions({
+      language: 'he'
+    });
+    
+    // Add listener for place selection
+    autocompleteRef.current.addListener('place_changed', () => {
+      const place = autocompleteRef.current?.getPlace();
+      
+      if (!place || !place.geometry || !place.geometry.location) {
+        toast({
+          title: "שגיאה",
+          description: "לא ניתן למצוא פרטים עבור המקום שנבחר",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      const venueData = {
+        name: place.name || '',
+        address: place.formatted_address || '',
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      };
+      
+      onVenueSelected(venueData);
+      setSearchQuery(place.name || '');
+      
+      toast({
+        title: "מיקום נבחר בהצלחה",
+        description: `${place.name}`,
+      });
+    });
+  };
+  
+  const handleManualSearch = () => {
     if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setShowResults(false);
+      toast({
+        title: "שגיאה",
+        description: "נא להזין שם מקום לחיפוש",
+        variant: "destructive"
+      });
       return;
     }
-
-    // In a real app, this would be an API call to search venues
-    const results = sampleVenues.filter(venue => 
-      venue.name.includes(searchQuery) || 
-      venue.address.includes(searchQuery)
-    );
     
-    setSearchResults(results);
-    setShowResults(true);
-    
-    if (results.length === 0) {
-      toast({
-        title: "לא נמצאו תוצאות",
-        description: "נסה לחפש מונח אחר",
-        variant: "destructive",
+    // Trigger place selection manually if user didn't select from dropdown
+    if (window.google && autocompleteRef.current) {
+      const service = new google.maps.places.PlacesService(document.createElement('div'));
+      service.findPlaceFromQuery({
+        query: searchQuery,
+        fields: ['geometry', 'name', 'formatted_address']
+      }, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          const place = results[0];
+          if (place.geometry && place.geometry.location) {
+            const venueData = {
+              name: place.name || '',
+              address: place.formatted_address || '',
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            };
+            
+            onVenueSelected(venueData);
+            setSearchQuery(place.name || '');
+            
+            toast({
+              title: "מיקום נבחר בהצלחה",
+              description: `${place.name}`,
+            });
+          }
+        } else {
+          toast({
+            title: "לא נמצאו תוצאות",
+            description: "נסה לחפש שוב עם מונחים אחרים",
+            variant: "destructive"
+          });
+        }
       });
     }
   };
-
-  const handleSelectVenue = (venue: typeof sampleVenues[0]) => {
-    onVenueSelected({
-      name: venue.name,
-      address: venue.address,
-      lat: venue.lat,
-      lng: venue.lng
-    });
-    
-    setSearchQuery('');
-    setShowResults(false);
-  };
-
+  
   const handleDetectLocation = () => {
-    // In a real app, this would use the browser's geolocation API
-    // and then reverse geocode to find the nearest address
+    if (!navigator.geolocation) {
+      toast({
+        title: "שגיאה",
+        description: "הדפדפן שלך אינו תומך באיתור מיקום",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     toast({
       title: "מאתר את מיקומך...",
       description: "המיקום יעודכן בקרוב",
     });
     
-    // Simulate location detection with a random venue from our sample
-    setTimeout(() => {
-      const randomVenue = sampleVenues[Math.floor(Math.random() * sampleVenues.length)];
-      onVenueSelected({
-        name: randomVenue.name,
-        address: randomVenue.address,
-        lat: randomVenue.lat,
-        lng: randomVenue.lng
-      });
-      
-      toast({
-        title: "מיקום אותר בהצלחה",
-        description: `נמצא: ${randomVenue.name}`,
-      });
-    }, 1500);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        // Use reverse geocoding to find address at these coordinates
+        if (window.google) {
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+              const place = results[0];
+              const venueData = {
+                name: place.name || place.formatted_address || 'המיקום הנוכחי שלי',
+                address: place.formatted_address || '',
+                lat: latitude,
+                lng: longitude
+              };
+              
+              onVenueSelected(venueData);
+              setSearchQuery(venueData.name);
+              
+              toast({
+                title: "מיקום אותר בהצלחה",
+                description: venueData.address,
+              });
+            } else {
+              toast({
+                title: "שגיאה",
+                description: "לא ניתן למצוא כתובת עבור המיקום הנוכחי",
+                variant: "destructive"
+              });
+            }
+          });
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        toast({
+          title: "שגיאה באיתור מיקום",
+          description: error.message || 'לא ניתן לאתר את מיקומך הנוכחי',
+          variant: "destructive"
+        });
+      }
+    );
   };
 
   return (
@@ -129,40 +206,34 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected }) => {
             <Search className="h-4 w-4 text-gray-400" />
           </div>
           <Input
-            className="pr-10"
+            ref={searchInputRef}
+            className="pr-10 text-right"
             placeholder="חפש לפי שם האולם או כתובת..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
           />
         </div>
-        <Button onClick={handleSearch}>חפש</Button>
+        <Button onClick={handleManualSearch}>חפש</Button>
         <Button variant="outline" onClick={handleDetectLocation}>
-          <Locate className="h-4 w-4 ml-2" />
+          <MapPin className="h-4 w-4 ml-2" />
           <span>איתור מיקום</span>
         </Button>
       </div>
       
-      {showResults && searchResults.length > 0 && (
-        <div className="border rounded-md divide-y">
-          {searchResults.map((venue) => (
-            <div 
-              key={venue.id} 
-              className="p-3 hover:bg-gray-50 cursor-pointer transition-colors"
-              onClick={() => handleSelectVenue(venue)}
-            >
-              <p className="font-medium">{venue.name}</p>
-              <p className="text-sm text-gray-500">{venue.address}</p>
-            </div>
-          ))}
-        </div>
-      )}
-      
-      <div className="bg-gray-50 p-3 rounded-md">
-        <p className="text-sm text-gray-500">בחר מיקום מהרשימה או הזן את פרטי המיקום ידנית בשדות למטה.</p>
+      <div className="bg-wedding-primary/10 p-3 rounded-md">
+        <p className="text-sm text-gray-600 text-right">בחר מיקום מהרשימה או אתר את מיקומך הנוכחי בעזרת הכפתור. המיקום שנבחר יופיע במפה באתר שלך.</p>
       </div>
     </div>
   );
 };
+
+// Add a type declaration for Google Maps API
+declare global {
+  interface Window {
+    google: typeof google;
+    initAutocomplete: () => void;
+  }
+}
 
 export default VenueSelector;

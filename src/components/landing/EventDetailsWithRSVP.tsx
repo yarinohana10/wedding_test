@@ -223,7 +223,7 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
 
   const renderEventDetails = () => (
     <div className="space-y-6 md:w-full lg:w-1/2">
-      <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
+      <div className="flex items-start p-5 bg-white rounded-lg shadow-md border border-wedding-primary/20 transition-transform hover:scale-[1.02]">
         <div>
           <p className="font-bold text-lg text-wedding-dark">{venue}</p>
           <p className="text-gray-600">{address}</p>
@@ -231,7 +231,7 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
         <MapPin className="text-wedding-primary mr-3 mt-1 flex-shrink-0" size={24} />
       </div>
       
-      <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
+      <div className="flex items-start p-5 bg-white rounded-lg shadow-md border border-wedding-primary/20 transition-transform hover:scale-[1.02]">
         <div>
           <p className="font-bold text-lg text-wedding-dark">תאריך האירוע</p>
           <p className="text-gray-600 mb-3">{date}</p>
@@ -247,7 +247,7 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
         <Calendar className="text-wedding-primary mr-3 mt-1 flex-shrink-0" size={24} />
       </div>
       
-      <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
+      <div className="flex items-start p-5 bg-white rounded-lg shadow-md border border-wedding-primary/20 transition-transform hover:scale-[1.02]">
         <div>
           <p className="font-bold text-lg text-wedding-dark">שעה</p>
           <div className="flex flex-col">
@@ -275,10 +275,10 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
         ></iframe>
       </div>
       
-      <div className="bg-gray-50 p-4 flex justify-center space-x-4 space-x-reverse">
+      <div className="bg-wedding-light p-4 flex justify-center space-x-4 space-x-reverse">
         <Button 
           variant="outline"
-          className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-100"
+          className="flex items-center gap-2 text-wedding-dark border-wedding-primary hover:bg-wedding-primary/10"
           onClick={() => window.open(`https://waze.com/ul?ll=${coordinates.lat},${coordinates.lng}&navigate=yes`, '_blank')}
         >
           <span>נווט עם Waze</span>
@@ -287,7 +287,7 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
         
         <Button 
           variant="outline"
-          className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-100"
+          className="flex items-center gap-2 text-wedding-dark border-wedding-primary hover:bg-wedding-primary/10"
           onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${coordinates.lat},${coordinates.lng}`, '_blank')}
         >
           <span>נווט עם Google Maps</span>
@@ -358,6 +358,7 @@ const EventDetailsWithRSVP: React.FC<EventDetailsWithRSVPProps> = ({
                 <Button 
                   onClick={lookupGuestByPhone}
                   disabled={isLookingUp}
+                  className="bg-wedding-primary hover:bg-wedding-accent text-white"
                 >
                   {isLookingUp ? <Loader2 className="h-4 w-4 animate-spin" /> : "המשך"}
                 </Button>

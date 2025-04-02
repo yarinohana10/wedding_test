@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
+import { Loader2, ArrowRight, CheckCircle, HomeIcon } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,7 +83,18 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4 gradient-bg">
       <Card className="w-full max-w-md mx-auto shadow-lg text-right">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-right">התחברות למערכת</CardTitle>
+          <div className="flex justify-between items-center">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/')}
+              className="text-wedding-dark hover:text-wedding-primary"
+            >
+              <HomeIcon className="h-4 w-4 ml-1" />
+              <span>חזרה לדף הבית</span>
+            </Button>
+            <CardTitle className="text-2xl text-right">התחברות למערכת</CardTitle>
+          </div>
           <CardDescription className="text-right">
             התחבר כדי לנהל את האירוע שלך
           </CardDescription>
@@ -140,7 +151,7 @@ const Login = () => {
             
             <Button 
               type="submit" 
-              className="w-full mt-4" 
+              className="w-full mt-4 bg-wedding-primary hover:bg-wedding-accent text-white" 
               disabled={isLoading}
             >
               {isLoading ? (
