@@ -1,6 +1,6 @@
 
-import Confetti from 'react-confetti';
 import { useWindowSize } from '@/hooks/use-window-size';
+import Confetti from 'react-confetti';
 
 export default function ConfettiLoader() {
   const { width, height } = useWindowSize();

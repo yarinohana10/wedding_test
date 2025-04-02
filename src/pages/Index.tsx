@@ -1,18 +1,18 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import HeroSection from "@/components/landing/HeroSection";
+import Countdown from "@/components/landing/Countdown";
+import EventDetails from "@/components/landing/EventDetails";
+import ConfettiLoader from "@/components/effects/ConfettiLoader";
+import RsvpForm from "@/components/rsvp/RsvpForm";
+import { Button } from "@/components/ui/button";
+import { Image, Heart, Clock, Calendar, MapPin } from "lucide-react";
+import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
 
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import HeroSection from '@/components/landing/HeroSection';
-import Countdown from '@/components/landing/Countdown';
-import EventDetails from '@/components/landing/EventDetails';
-import ConfettiLoader from '@/components/effects/ConfettiLoader';
-import RsvpForm from '@/components/rsvp/RsvpForm';
-import { Button } from '@/components/ui/button';
-import { Image, Heart } from 'lucide-react';
-
-export const weddingDate = new Date()
-export const coupleName = "דנה & יוסי"
+export const weddingDate = new Date();
+export const coupleName = "דנה & יוסי";
 export const targetDate = new Date(weddingDate);
 
 export const weddingData = {
@@ -24,93 +24,14 @@ export const weddingData = {
   targetDate,
   coordinates: {
     lat: 32.0853,
-    lng: 34.7818
+    lng: 34.7818,
   },
   heroImages: [
     "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
     "https://images.unsplash.com/photo-1511285560929-80b456503681?ixlib=rb-4.0.3&auto=format&fit=crop&w=1769&q=80",
     "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
-  ]
+  ],
 };
-
-
-// Missing components for import
-const MapPin = ({ className, size, ...props }: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    {...props}
-  >
-    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-    <circle cx="12" cy="10" r="3" />
-  </svg>
-);
-
-const Calendar = ({ className, size, ...props }: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    {...props}
-  >
-    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-    <line x1="16" x2="16" y1="2" y2="6" />
-    <line x1="8" x2="8" y1="2" y2="6" />
-    <line x1="3" x2="21" y1="10" y2="10" />
-  </svg>
-);
-
-const Clock = ({ className, size, ...props }: any) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    {...props}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
-function getDayOfWeek(date: Date): string {
-  const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
-  return days[date.getDay()];
-}
-
-function formatHebrewDate(date: Date): string {
-  const day = date.getDate();
-  const months = [
-    "ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני",
-    "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"
-  ];
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-
-  return `${day} ב${month} ${year}`;
-}
-
 
 const Index = () => {
   const navigate = useNavigate();
@@ -120,8 +41,6 @@ const Index = () => {
     setShowConfetti(true);
     document.title = `${coupleName} - הזמנה לחתונה`;
   }, []);
-
-
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -134,9 +53,7 @@ const Index = () => {
           date={weddingData.date}
           heroImages={weddingData.heroImages}
         />
-        <section className="container mx-auto px-4 py-16 bg-wedding-light">
           <Countdown targetDate={weddingData.targetDate} />
-        </section>
 
         <section id="rsvp-section" className="py-16 gradient-bg">
           <div className="container mx-auto px-4">
@@ -144,22 +61,35 @@ const Index = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <div>
                   <div className="flex items-center justify-center mb-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-wedding-dark">פרטי האירוע</h2>
-                    <Heart className="text-wedding-primary mr-2" size={28} fill="currentColor" />
+                    <h2 className="text-2xl md:text-3xl font-bold text-wedding-dark">
+                      פרטי האירוע
+                    </h2>
+                    <Heart
+                      className="text-wedding-primary mr-2"
+                      size={28}
+                      fill="currentColor"
+                    />
                   </div>
 
                   <div className="space-y-6">
                     <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
                       <div>
-                        <p className="font-bold text-lg text-wedding-dark">{weddingData.venue}</p>
+                        <p className="font-bold text-lg text-wedding-dark">
+                          {weddingData.venue}
+                        </p>
                         <p className="text-gray-600">{weddingData.address}</p>
                       </div>
-                      <MapPin className="text-wedding-primary mr-3 mt-1 flex-shrink-0" size={24} />
+                      <MapPin
+                        className="text-wedding-primary mr-3 mt-1 flex-shrink-0"
+                        size={24}
+                      />
                     </div>
 
                     <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
                       <div>
-                        <p className="font-bold text-lg text-wedding-dark">תאריך האירוע</p>
+                        <p className="font-bold text-lg text-wedding-dark">
+                          תאריך האירוע
+                        </p>
                         <p className="text-gray-600 mb-3">{weddingData.date}</p>
                         <Button
                           className="bg-wedding-primary text-white hover:bg-wedding-accent transition-colors"
@@ -171,29 +101,45 @@ const Index = () => {
                             const endDate = new Date(eventDate);
                             endDate.setHours(23, 59, 0);
 
-                            const startTimeISO = eventDate.toISOString().replace(/-|:|\.\d+/g, '');
-                            const endTimeISO = endDate.toISOString().replace(/-|:|\.\d+/g, '');
+                            const startTimeISO = eventDate
+                              .toISOString()
+                              .replace(/-|:|\.\d+/g, "");
+                            const endTimeISO = endDate
+                              .toISOString()
+                              .replace(/-|:|\.\d+/g, "");
 
-                            const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=חתונה%20של%20דנה%20ויוסי&dates=${startTimeISO}/${endTimeISO}&details=אנחנו%20מתחתנים!%20נשמח%20לראותכם%20בשמחתנו.&location=${encodeURIComponent(weddingData.address)}&ctz=Asia/Jerusalem`;
+                            const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=חתונה%20של%20דנה%20ויוסי&dates=${startTimeISO}/${endTimeISO}&details=אנחנו%20מתחתנים!%20נשמח%20לראותכם%20בשמחתנו.&location=${encodeURIComponent(
+                              weddingData.address
+                            )}&ctz=Asia/Jerusalem`;
 
-                            window.open(calendarLink, '_blank');
+                            window.open(calendarLink, "_blank");
                           }}
                         >
                           <span>הוסף ליומן</span>
                         </Button>
                       </div>
-                      <Calendar className="text-wedding-primary mr-3 mt-1 flex-shrink-0" size={24} />
+                      <Calendar
+                        className="text-wedding-primary mr-3 mt-1 flex-shrink-0"
+                        size={24}
+                      />
                     </div>
 
                     <div className="flex items-start p-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">
                       <div>
-                        <p className="font-bold text-lg text-wedding-dark">שעה</p>
+                        <p className="font-bold text-lg text-wedding-dark">
+                          שעה
+                        </p>
                         <div className="flex flex-col">
-                          <p className="text-gray-600">קבלת פנים: {weddingData.time}</p>
+                          <p className="text-gray-600">
+                            קבלת פנים: {weddingData.time}
+                          </p>
                           <p className="text-gray-600">חופה: 20:00</p>
                         </div>
                       </div>
-                      <Clock className="text-wedding-primary mr-3 mt-1 flex-shrink-0" size={24} />
+                      <Clock
+                        className="text-wedding-primary mr-3 mt-1 flex-shrink-0"
+                        size={24}
+                      />
                     </div>
 
                     <div className="rounded-xl overflow-hidden shadow-lg h-48 md:h-64">
@@ -213,19 +159,37 @@ const Index = () => {
                       <Button
                         variant="outline"
                         className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-100"
-                        onClick={() => window.open(`https://waze.com/ul?ll=${weddingData.coordinates.lat},${weddingData.coordinates.lng}&navigate=yes`, '_blank')}
+                        onClick={() =>
+                          window.open(
+                            `https://waze.com/ul?ll=${weddingData.coordinates.lat},${weddingData.coordinates.lng}&navigate=yes`,
+                            "_blank"
+                          )
+                        }
                       >
                         <span>נווט עם Waze</span>
-                        <img src="https://www.waze.com/favicon.ico" alt="Waze" className="w-5 h-5 mr-1" />
+                        <img
+                          src="https://www.waze.com/favicon.ico"
+                          alt="Waze"
+                          className="w-5 h-5 mr-1"
+                        />
                       </Button>
 
                       <Button
                         variant="outline"
                         className="flex items-center gap-2 text-blue-600 border-blue-600 hover:bg-blue-100"
-                        onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${weddingData.coordinates.lat},${weddingData.coordinates.lng}`, '_blank')}
+                        onClick={() =>
+                          window.open(
+                            `https://www.google.com/maps/dir/?api=1&destination=${weddingData.coordinates.lat},${weddingData.coordinates.lng}`,
+                            "_blank"
+                          )
+                        }
                       >
                         <span>נווט עם Google Maps</span>
-                        <img src="https://maps.google.com/favicon.ico" alt="Google Maps" className="w-5 h-5 mr-1" />
+                        <img
+                          src="https://maps.google.com/favicon.ico"
+                          alt="Google Maps"
+                          className="w-5 h-5 mr-1"
+                        />
                       </Button>
                     </div>
                   </div>
@@ -243,14 +207,18 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-lg mx-auto bg-white rounded-lg p-8 shadow-md">
               <div className="flex justify-center mb-4">
-                <Heart className="text-wedding-primary ml-2" fill="currentColor" />
+                <Heart
+                  className="text-wedding-primary ml-2"
+                  fill="currentColor"
+                />
               </div>
               <h2 className="text-2xl font-bold mb-4">הצטרפו לחגיגה שלנו</h2>
               <p className="text-gray-600 mb-6">
-                צפו בתמונות שלנו וחלקו את הרגעים המיוחדים שלכם. אתם מוזמנים להעלות תמונות משלכם!
+                צפו בתמונות שלנו וחלקו את הרגעים המיוחדים שלכם. אתם מוזמנים
+                להעלות תמונות משלכם!
               </p>
               <Button
-                onClick={() => navigate('/gallery')}
+                onClick={() => navigate("/gallery")}
                 variant="outline"
                 className="bg-white border-wedding-primary text-wedding-primary hover:bg-wedding-primary hover:text-white transition-colors flex items-center gap-3 mx-auto"
               >

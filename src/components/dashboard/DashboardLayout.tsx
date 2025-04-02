@@ -13,7 +13,6 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 export interface NavItem {
   title: string;
@@ -39,7 +38,6 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   const handleLogout = () => {
     // In a real app, this would clear authentication state, tokens, etc.
