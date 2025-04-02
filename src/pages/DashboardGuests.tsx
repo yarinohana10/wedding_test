@@ -19,7 +19,9 @@ import {
   Filter,
   UserMinus,
   Loader2,
-  X
+  X,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -27,30 +29,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-// Sample guest data
-const initialGuests = [
-  { id: 1, name: "דניאל כהן", phone: "050-1234567", guests: 2, status: "אישר הגעה", food: "רגיל" },
-  { id: 2, name: "מיכל לוי", phone: "052-7654321", guests: 1, status: "אישר הגעה", food: "צמחוני" },
-  { id: 3, name: "יוסי אברהם", phone: "054-9876543", guests: 4, status: "טרם אישר", food: "-" },
-  { id: 4, name: "רונית דוד", phone: "053-1472583", guests: 2, status: "אישר הגעה", food: "רגיל" },
-  { id: 5, name: "אייל גולן", phone: "058-3698521", guests: 3, status: "טרם אישר", food: "-" },
-  { id: 6, name: "שרה לוי", phone: "050-9876543", guests: 2, status: "לא מגיע", food: "-" },
-  { id: 7, name: "דוד ישראלי", phone: "052-3456789", guests: 5, status: "אישר הגעה", food: "רגיל" },
-  { id: 8, name: "נועה כהן", phone: "053-7891234", guests: 1, status: "טרם אישר", food: "-" },
-];
+import { supabase } from "@/integrations/supabase/client";
+import * as XLSX from 'xlsx';
 
 interface Guest {
-  id: number;
+  id: string;
   name: string;
   phone: string;
   guests: number;
   status: string;
   food: string;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 const DashboardGuests = () => {
-  const [guests, setGuests] = useState<Guest[]>(initialGuests);
+  const [guests, setGuests] = useState<Guest[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -59,6 +53,8 @@ const DashboardGuests = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -79,6 +75,52 @@ const DashboardGuests = () => {
     food: "-"
   });
 
+  // Load guests from Supabase
+  const fetchGuests = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase
+        .from('guests')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        throw error;
+      }
+      
+      setGuests(data || []);
+    } catch (err: any) {
+      console.error('Error fetching guests:', err);
+      setError(err.message || 'Error fetching guests');
+      toast({
+        title: "שגיאה בטעינת הנתונים",
+        description: err.message || 'Error fetching guests',
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGuests();
+    
+    // Set up realtime subscription
+    const subscription = supabase
+      .channel('guests-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'guests' }, (payload) => {
+        console.log('Realtime update:', payload);
+        fetchGuests(); // Refresh data when changes occur
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     // Update summary stats when guests change
     const attending = guests.filter(g => g.status === "אישר הגעה");
@@ -96,7 +138,7 @@ const DashboardGuests = () => {
   // Filter guests based on search term and status filter
   const filteredGuests = guests.filter(guest => {
     const matchesSearch = 
-      guest.name.includes(searchTerm) || 
+      guest.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
       guest.phone.includes(searchTerm);
     
     const matchesStatus = 
@@ -116,59 +158,154 @@ const DashboardGuests = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (guestToDelete) {
-      setGuests(guests.filter(g => g.id !== guestToDelete.id));
-      toast({
-        title: "מוזמן נמחק",
-        description: `${guestToDelete.name} הוסר מרשימת המוזמנים`,
-      });
+      setIsLoading(true);
+      try {
+        const { error } = await supabase
+          .from('guests')
+          .delete()
+          .eq('id', guestToDelete.id);
+        
+        if (error) throw error;
+        
+        // Optimistically update the UI
+        setGuests(guests.filter(g => g.id !== guestToDelete.id));
+        
+        toast({
+          title: "מוזמן נמחק",
+          description: `${guestToDelete.name} הוסר מרשימת המוזמנים`,
+        });
+      } catch (err: any) {
+        console.error('Error deleting guest:', err);
+        toast({
+          title: "שגיאה במחיקת מוזמן",
+          description: err.message || 'Failed to delete guest',
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+        setIsDeleteDialogOpen(false);
+        setGuestToDelete(null);
+      }
     }
-    setIsDeleteDialogOpen(false);
-    setGuestToDelete(null);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingGuest) {
-      setGuests(guests.map(g => g.id === editingGuest.id ? editingGuest : g));
-      toast({
-        title: "מוזמן עודכן",
-        description: `פרטי ${editingGuest.name} עודכנו בהצלחה`,
-      });
+      setIsLoading(true);
+      try {
+        const { error } = await supabase
+          .from('guests')
+          .update({
+            name: editingGuest.name,
+            phone: editingGuest.phone,
+            guests: editingGuest.guests,
+            status: editingGuest.status,
+            food: editingGuest.food
+          })
+          .eq('id', editingGuest.id);
+        
+        if (error) throw error;
+        
+        // Optimistically update the UI
+        setGuests(guests.map(g => g.id === editingGuest.id ? editingGuest : g));
+        
+        toast({
+          title: "מוזמן עודכן",
+          description: `פרטי ${editingGuest.name} עודכנו בהצלחה`,
+        });
+      } catch (err: any) {
+        console.error('Error updating guest:', err);
+        toast({
+          title: "שגיאה בעדכון מוזמן",
+          description: err.message || 'Failed to update guest',
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+        setIsEditDialogOpen(false);
+        setEditingGuest(null);
+      }
     }
-    setIsEditDialogOpen(false);
-    setEditingGuest(null);
   };
 
-  const handleAddGuest = () => {
-    const newId = Math.max(...guests.map(g => g.id)) + 1;
-    const guestToAdd = { ...newGuest, id: newId };
-    setGuests([...guests, guestToAdd]);
-    toast({
-      title: "מוזמן נוסף",
-      description: `${newGuest.name} נוסף לרשימת המוזמנים`,
-    });
-    setIsAddDialogOpen(false);
-    setNewGuest({
-      name: "",
-      phone: "",
-      guests: 1,
-      status: "טרם אישר",
-      food: "-"
-    });
+  const handleAddGuest = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('guests')
+        .insert([newGuest])
+        .select();
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        // Optimistically update the UI
+        setGuests([data[0], ...guests]);
+        
+        toast({
+          title: "מוזמן נוסף",
+          description: `${newGuest.name} נוסף לרשימת המוזמנים`,
+        });
+      }
+    } catch (err: any) {
+      console.error('Error adding guest:', err);
+      toast({
+        title: "שגיאה בהוספת מוזמן",
+        description: err.message || 'Failed to add guest',
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+      setIsAddDialogOpen(false);
+      setNewGuest({
+        name: "",
+        phone: "",
+        guests: 1,
+        status: "טרם אישר",
+        food: "-"
+      });
+    }
   };
 
   const exportToExcel = () => {
     setIsExporting(true);
     
-    // Simulate export delay
-    setTimeout(() => {
-      setIsExporting(false);
+    try {
+      // Prepare data for export
+      const exportData = guests.map(guest => ({
+        'שם': guest.name,
+        'טלפון': guest.phone,
+        'כמות אורחים': guest.guests,
+        'סטטוס': guest.status,
+        'העדפת אוכל': guest.food
+      }));
+      
+      // Create worksheet
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "רשימת מוזמנים");
+      
+      // Generate file and trigger download
+      XLSX.writeFile(wb, "guests_list.xlsx");
+      
       toast({
         title: "ייצוא לאקסל",
         description: "רשימת המוזמנים יוצאה לקובץ אקסל בהצלחה",
       });
-    }, 2000);
+    } catch (err: any) {
+      console.error('Error exporting to Excel:', err);
+      toast({
+        title: "שגיאה בייצוא לאקסל",
+        description: err.message || 'Failed to export to Excel',
+        variant: "destructive"
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Get status color class
@@ -220,6 +357,30 @@ const DashboardGuests = () => {
     );
   };
 
+  if (isLoading && guests.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-muted-foreground" />
+          <p className="text-muted-foreground">טוען רשימת מוזמנים...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && guests.length === 0) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="text-center">
+          <XCircle className="h-10 w-10 mx-auto mb-4 text-destructive" />
+          <p className="text-destructive font-medium mb-2">שגיאה בטעינת נתונים</p>
+          <p className="text-muted-foreground">{error}</p>
+          <Button className="mt-4" onClick={fetchGuests}>נסה שנית</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="text-right">
@@ -235,7 +396,7 @@ const DashboardGuests = () => {
           <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
           <div className="mt-2 flex items-center justify-between">
             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-              <span className="text-green-800 text-xl font-bold">{summary.attending}</span>
+              <CheckCircle2 className="h-6 w-6 text-green-800" />
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold">{summary.totalGuests}</p>
@@ -438,7 +599,7 @@ const DashboardGuests = () => {
                   type="number"
                   min="1"
                   value={editingGuest.guests}
-                  onChange={(e) => setEditingGuest({...editingGuest, guests: parseInt(e.target.value)})}
+                  onChange={(e) => setEditingGuest({...editingGuest, guests: parseInt(e.target.value) || 1})}
                   className="col-span-3"
                 />
               </div>
@@ -479,7 +640,10 @@ const DashboardGuests = () => {
           )}
           <DialogFooter className="flex justify-between sm:justify-between">
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>ביטול</Button>
-            <Button onClick={handleSaveEdit}>שמור שינויים</Button>
+            <Button onClick={handleSaveEdit} disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : null}
+              שמור שינויים
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -499,7 +663,10 @@ const DashboardGuests = () => {
           </div>
           <DialogFooter className="flex justify-between sm:justify-between">
             <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>ביטול</Button>
-            <Button variant="destructive" onClick={confirmDelete}>מחק</Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : null}
+              מחק
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -539,7 +706,7 @@ const DashboardGuests = () => {
                 type="number"
                 min="1"
                 value={newGuest.guests}
-                onChange={(e) => setNewGuest({...newGuest, guests: parseInt(e.target.value)})}
+                onChange={(e) => setNewGuest({...newGuest, guests: parseInt(e.target.value) || 1})}
                 className="col-span-3"
               />
             </div>
@@ -579,7 +746,10 @@ const DashboardGuests = () => {
           </div>
           <DialogFooter className="flex justify-between sm:justify-between">
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>ביטול</Button>
-            <Button onClick={handleAddGuest}>הוסף מוזמן</Button>
+            <Button onClick={handleAddGuest} disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : null}
+              הוסף מוזמן
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -588,4 +758,3 @@ const DashboardGuests = () => {
 };
 
 export default DashboardGuests;
-

@@ -3,13 +3,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
 import Location from "./pages/Location";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/Dashboard";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import DashboardGuests from "./pages/DashboardGuests";
 import DashboardMessages from "./pages/DashboardMessages";
@@ -43,7 +42,7 @@ const App = () => (
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Dashboard />} />
+            <Route index element={<Navigate to="/dashboard/guests" replace />} />
             <Route path="guests" element={<DashboardGuests />} />
             <Route path="messages" element={<DashboardMessages />} />
             <Route path="settings" element={<DashboardSettings />} />

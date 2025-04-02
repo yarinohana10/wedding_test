@@ -4,7 +4,6 @@ import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { SidebarNav } from './SidebarNav';
 import { 
   UsersRound, 
-  LayoutDashboard, 
   MessageSquare, 
   Settings, 
   LogOut,
@@ -24,11 +23,6 @@ export interface NavItem {
 }
 
 const dashboardNavItems: NavItem[] = [
-  {
-    title: "דף הבית",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
   {
     title: "ניהול מוזמנים",
     href: "/dashboard/guests",
