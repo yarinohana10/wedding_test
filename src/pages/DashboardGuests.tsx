@@ -81,10 +81,14 @@ const DashboardGuests = () => {
     setError(null);
     
     try {
+      // Using type assertion to work around TypeScript limitations with Supabase schema
       const { data, error } = await supabase
         .from('guests')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as { 
+          data: Guest[] | null; 
+          error: Error | null; 
+        };
       
       if (error) {
         throw error;
@@ -162,10 +166,11 @@ const DashboardGuests = () => {
     if (guestToDelete) {
       setIsLoading(true);
       try {
+        // Using type assertion to work around TypeScript limitations
         const { error } = await supabase
           .from('guests')
           .delete()
-          .eq('id', guestToDelete.id);
+          .eq('id', guestToDelete.id) as { error: Error | null };
         
         if (error) throw error;
         
@@ -195,6 +200,7 @@ const DashboardGuests = () => {
     if (editingGuest) {
       setIsLoading(true);
       try {
+        // Using type assertion to work around TypeScript limitations
         const { error } = await supabase
           .from('guests')
           .update({
@@ -204,7 +210,7 @@ const DashboardGuests = () => {
             status: editingGuest.status,
             food: editingGuest.food
           })
-          .eq('id', editingGuest.id);
+          .eq('id', editingGuest.id) as { error: Error | null };
         
         if (error) throw error;
         
@@ -233,10 +239,14 @@ const DashboardGuests = () => {
   const handleAddGuest = async () => {
     setIsLoading(true);
     try {
+      // Using type assertion to work around TypeScript limitations
       const { data, error } = await supabase
         .from('guests')
         .insert([newGuest])
-        .select();
+        .select() as { 
+          data: Guest[] | null; 
+          error: Error | null; 
+        };
       
       if (error) throw error;
       
