@@ -8,6 +8,9 @@ import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
 import Location from "./pages/Location";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
 import DashboardGuests from "./pages/DashboardGuests";
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/location" element={<Location />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/gift" element={<Gift />} />
           <Route path="/rsvp" element={<Rsvp />} />
           

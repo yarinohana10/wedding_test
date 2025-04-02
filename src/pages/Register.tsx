@@ -1,77 +1,73 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowRight, CheckCircle } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Loader2, ArrowRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-interface LocationState {
-  emailConfirmation?: boolean;
-}
-
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  useEffect(() => {
-    // Check for email confirmation message from registration
-    const state = location.state as LocationState;
-    if (state?.emailConfirmation) {
-      setShowEmailConfirmation(true);
-    }
-  }, [location]);
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     
-    if (!email || !password) {
+    if (!email || !password || !confirmPassword) {
       setError('נא למלא את כל השדות');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('סיסמה חייבת להיות באורך של 6 תווים לפחות');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      setError('סיסמאות אינן תואמות');
       return;
     }
     
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signUp({
         email,
-        password
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        }
       });
       
       if (error) throw error;
       
       toast({
-        title: "התחברת בהצלחה",
-        description: "מועבר לדשבורד...",
+        title: "הרשמה בוצעה בהצלחה",
+        description: "נשלח אימייל לאימות החשבון שלך",
       });
       
-      // Redirect to dashboard
-      navigate('/dashboard');
+      // If auto-confirm is enabled (likely in development), redirect to dashboard
+      if (data.session) {
+        navigate('/dashboard');
+      } else {
+        // Redirect to login page for email confirmation message
+        navigate('/login', { state: { emailConfirmation: true } });
+      }
     } catch (err: any) {
       console.error(err);
-      
-      // Handle specific error cases
-      if (err.message?.includes('Email not confirmed')) {
-        setError('כתובת הדוא״ל טרם אומתה. אנא בדוק את תיבת הדואר שלך.');
-      } else if (err.message?.includes('Invalid login')) {
-        setError('אימייל או סיסמה שגויים');
-      } else {
-        setError(err.message || 'אירעה שגיאה בעת ההתחברות');
-      }
-      
+      setError(err.message || 'אירעה שגיאה בעת ההרשמה');
       toast({
         title: "שגיאה",
-        description: "התחברות נכשלה. אנא בדוק את הפרטים שהוזנו.",
+        description: err.message || 'אירעה שגיאה בעת ההרשמה',
         variant: "destructive"
       });
     } finally {
@@ -83,9 +79,9 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center p-4 gradient-bg">
       <Card className="w-full max-w-md mx-auto shadow-lg text-right">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-right">התחברות למערכת</CardTitle>
+          <CardTitle className="text-2xl text-right">הרשמה למערכת</CardTitle>
           <CardDescription className="text-right">
-            התחבר כדי לנהל את האירוע שלך
+            צור חשבון חדש לניהול האירוע
           </CardDescription>
         </CardHeader>
         
@@ -96,17 +92,7 @@ const Login = () => {
             </div>
           )}
           
-          {showEmailConfirmation && (
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4 flex items-start">
-              <CheckCircle className="text-blue-500 h-5 w-5 mt-0.5 ml-2 flex-shrink-0" />
-              <div>
-                <p className="text-blue-700 text-sm">נשלח אימייל לאימות החשבון שלך</p>
-                <p className="text-xs text-blue-600 mt-1">אנא בדוק את תיבת הדואר שלך ולחץ על הקישור לאימות</p>
-              </div>
-            </div>
-          )}
-          
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-right block">דוא״ל</Label>
               <Input 
@@ -121,18 +107,26 @@ const Login = () => {
             </div>
             
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-800">
-                  שכחתי סיסמה
-                </Link>
-                <Label htmlFor="password" className="text-right block">סיסמה</Label>
-              </div>
+              <Label htmlFor="password" className="text-right block">סיסמה</Label>
               <Input 
                 id="password" 
                 type="password" 
                 placeholder="הזן סיסמה" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="text-right"
+                dir="rtl"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-right block">אימות סיסמה</Label>
+              <Input 
+                id="confirmPassword" 
+                type="password" 
+                placeholder="הזן שוב את הסיסמה" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="text-right"
                 dir="rtl"
               />
@@ -146,10 +140,10 @@ const Login = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                  <span>מתחבר...</span>
+                  <span>מבצע הרשמה...</span>
                 </>
               ) : (
-                <span>התחברות</span>
+                <span>הרשמה</span>
               )}
             </Button>
           </form>
@@ -157,8 +151,8 @@ const Login = () => {
         
         <CardFooter className="flex justify-between flex-row-reverse">
           <div className="inline-flex items-center text-blue-600 hover:text-blue-800">
-            <Link to="/register">
-              <span>אין לך חשבון? הירשם עכשיו</span>
+            <Link to="/login">
+              <span>כבר יש לך חשבון? התחבר</span>
               <ArrowRight className="inline ml-1 h-4 w-4" />
             </Link>
           </div>
@@ -168,4 +162,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
