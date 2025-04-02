@@ -7,19 +7,19 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import Gallery from "./pages/userContent/Gallery";
 import Location from "./pages/userContent/Location";
-import Login from "./pages/adminContent/Login";
-import Register from "./pages/adminContent/Register";
-import ForgotPassword from "./pages/adminContent/ForgotPassword";
-import ResetPassword from "./pages/adminContent/ResetPassword";
+import Login from "./pages/adminContent/auth/Login";
+import Register from "./pages/adminContent/auth/Register";
+import ForgotPassword from "./pages/adminContent/auth/ForgotPassword";
+import ResetPassword from "./pages/adminContent/auth/ResetPassword";
 import NotFound from "./components/NotFound";
 import DashboardLayout from "./components/dashboard/DashboardLayout";
-import DashboardGuests from "./pages/adminContent/DashboardGuests";
-import DashboardSettings from "./pages/adminContent/DashboardSettings";
+import DashboardGuests from "./pages/adminContent/adminSection/DashboardGuests";
+import DashboardSettings from "./pages/adminContent/adminSection/DashboardSettings";
 import Gift from "./pages/userContent/Gift";
 import Rsvp from "./pages/userContent/Rsvp";
-import Terms from "./pages/userContent/Terms";
-import Privacy from "./pages/userContent/Privacy";
-import Accessibility from "./pages/userContent/Accessibility";
+import Terms from "./pages/userContent/leagalContent/Terms";
+import Privacy from "./pages/userContent/leagalContent/Privacy";
+import Accessibility from "./pages/userContent/leagalContent/Accessibility";
 
 const queryClient = new QueryClient();
 

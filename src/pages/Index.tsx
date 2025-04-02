@@ -134,11 +134,8 @@ const Index = () => {
           date={weddingData.date}
           heroImages={weddingData.heroImages}
         />
-
-        <section className="py-16 bg-wedding-light">
-          <div className="container mx-auto px-4">
-            <Countdown targetDate={weddingData.targetDate} />
-          </div>
+        <section className="container mx-auto px-4 py-16 bg-wedding-light">
+          <Countdown targetDate={weddingData.targetDate} />
         </section>
 
         <section id="rsvp-section" className="py-16 gradient-bg">
