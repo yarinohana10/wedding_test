@@ -26,11 +26,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				wedding: {
-          primary: '#F0B6BC',    // Blush pink
-          secondary: '#E8D7C3',  // Soft beige
-          accent: '#D4AF7A',     // Rose gold
-          dark: '#1A1A2E',       // Deep navy
-          light: '#F9F5F2',      // Off-white
+					primary: '#F0B6BC',    // Blush pink
+					secondary: '#E8D7C3',  // Soft beige
+					accent: '#D4AF7A',     // Rose goldA
+					dark: '#1A1A2E',       // Deep navy
+					light: '#F9F5F2',      // Off-white
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
