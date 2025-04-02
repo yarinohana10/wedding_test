@@ -15,6 +15,14 @@ interface VenueSelectorProps {
   defaultValue?: string;
 }
 
+// Define Google namespace type explicitly to prevent TypeScript errors
+declare global {
+  interface Window {
+    google: typeof google;
+    initAutocomplete: () => void;
+  }
+}
+
 const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultValue }) => {
   const [searchQuery, setSearchQuery] = useState(defaultValue || '');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -227,13 +235,5 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultV
     </div>
   );
 };
-
-// Add a type declaration for Google Maps API
-declare global {
-  interface Window {
-    google: typeof google;
-    initAutocomplete: () => void;
-  }
-}
 
 export default VenueSelector;
