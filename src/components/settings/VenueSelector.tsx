@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface VenueSelectorProps {
@@ -15,133 +15,39 @@ interface VenueSelectorProps {
   defaultValue?: string;
 }
 
-// Define Google namespace type explicitly to prevent TypeScript errors
-declare global {
-  interface Window {
-    google: typeof google;
-    initAutocomplete: () => void;
-  }
-}
-
 const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultValue }) => {
-  const [searchQuery, setSearchQuery] = useState(defaultValue || '');
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const [venueName, setVenueName] = useState(defaultValue?.split(',')[0] || '');
+  const [venueAddress, setVenueAddress] = useState(defaultValue || '');
   const { toast } = useToast();
   
-  useEffect(() => {
-    // Load Google Maps API script dynamically
-    const loadGoogleMapsScript = () => {
-      const googleMapsApiKey = 'REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places&callback=initAutocomplete`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-      
-      // Expose initAutocomplete to the window object
-      window.initAutocomplete = initAutocomplete;
-      
-      return () => {
-        document.head.removeChild(script);
-        delete window.initAutocomplete;
-      };
-    };
-    
-    if (!window.google) {
-      loadGoogleMapsScript();
-    } else {
-      initAutocomplete();
-    }
-  }, []);
-  
-  const initAutocomplete = () => {
-    if (!searchInputRef.current || !window.google) return;
-    
-    // Initialize the autocomplete
-    autocompleteRef.current = new google.maps.places.Autocomplete(searchInputRef.current, {
-      types: ['establishment'],
-      fields: ['geometry', 'name', 'formatted_address'],
-      componentRestrictions: { country: 'il' } // Restrict to Israel
-    });
-    
-    // Note: We're not setting language here as it's not part of the AutocompleteOptions type
-    // Instead, we'll set it via the script URL parameter when loading the API
-    
-    // Add listener for place selection
-    autocompleteRef.current.addListener('place_changed', () => {
-      const place = autocompleteRef.current?.getPlace();
-      
-      if (!place || !place.geometry || !place.geometry.location) {
-        toast({
-          title: "שגיאה",
-          description: "לא ניתן למצוא פרטים עבור המקום שנבחר",
-          variant: "destructive"
-        });
-        return;
-      }
-      
-      const venueData = {
-        name: place.name || '',
-        address: place.formatted_address || '',
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-      };
-      
-      onVenueSelected(venueData);
-      setSearchQuery(place.name || '');
-      
-      toast({
-        title: "מיקום נבחר בהצלחה",
-        description: `${place.name}`,
-      });
-    });
-  };
-  
-  const handleManualSearch = () => {
-    if (!searchQuery.trim()) {
+  const handleSubmit = () => {
+    if (!venueName || !venueAddress) {
       toast({
         title: "שגיאה",
-        description: "נא להזין שם מקום לחיפוש",
+        description: "נא למלא את שם האולם והכתובת",
         variant: "destructive"
       });
       return;
     }
     
-    // Trigger place selection manually if user didn't select from dropdown
-    if (window.google && autocompleteRef.current) {
-      const service = new google.maps.places.PlacesService(document.createElement('div'));
-      service.findPlaceFromQuery({
-        query: searchQuery,
-        fields: ['geometry', 'name', 'formatted_address']
-      }, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          const place = results[0];
-          if (place.geometry && place.geometry.location) {
-            const venueData = {
-              name: place.name || '',
-              address: place.formatted_address || '',
-              lat: place.geometry.location.lat(),
-              lng: place.geometry.location.lng()
-            };
-            
-            onVenueSelected(venueData);
-            setSearchQuery(place.name || '');
-            
-            toast({
-              title: "מיקום נבחר בהצלחה",
-              description: `${place.name}`,
-            });
-          }
-        } else {
-          toast({
-            title: "לא נמצאו תוצאות",
-            description: "נסה לחפש שוב עם מונחים אחרים",
-            variant: "destructive"
-          });
-        }
-      });
-    }
+    // For demo purposes, we'll use fixed coordinates for Tel Aviv
+    // In a real app, you would use a geocoding service to get real coordinates
+    const demoCoordinates = {
+      lat: 32.085341,
+      lng: 34.781768
+    };
+    
+    onVenueSelected({
+      name: venueName,
+      address: venueAddress,
+      lat: demoCoordinates.lat,
+      lng: demoCoordinates.lng
+    });
+    
+    toast({
+      title: "מיקום נשמר בהצלחה",
+      description: `${venueName}, ${venueAddress}`,
+    });
   };
   
   const handleDetectLocation = () => {
@@ -161,40 +67,23 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultV
     
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
+        // For demo purposes, just set a default venue
+        setVenueName("המיקום הנוכחי שלי");
+        setVenueAddress("תל אביב, ישראל");
         
-        // Use reverse geocoding to find address at these coordinates
-        if (window.google) {
-          const geocoder = new google.maps.Geocoder();
-          geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
-            if (status === 'OK' && results && results[0]) {
-              const place = results[0];
-              // GeocoderResult doesn't have a 'name' property, so we'll use formatted_address instead
-              const venueName = place.formatted_address?.split(',')[0] || 'המיקום הנוכחי שלי';
-              
-              const venueData = {
-                name: venueName,
-                address: place.formatted_address || '',
-                lat: latitude,
-                lng: longitude
-              };
-              
-              onVenueSelected(venueData);
-              setSearchQuery(venueData.name);
-              
-              toast({
-                title: "מיקום אותר בהצלחה",
-                description: venueData.address,
-              });
-            } else {
-              toast({
-                title: "שגיאה",
-                description: "לא ניתן למצוא כתובת עבור המיקום הנוכחי",
-                variant: "destructive"
-              });
-            }
-          });
-        }
+        const venueData = {
+          name: "המיקום הנוכחי שלי",
+          address: "תל אביב, ישראל",
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        
+        onVenueSelected(venueData);
+        
+        toast({
+          title: "מיקום אותר בהצלחה",
+          description: "תל אביב, ישראל",
+        });
       },
       (error) => {
         console.error('Geolocation error:', error);
@@ -209,29 +98,38 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultV
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <div className="relative flex-grow">
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
+      <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-right block">שם המקום</label>
           <Input
-            ref={searchInputRef}
-            className="pr-10 text-right"
-            placeholder="חפש לפי שם האולם או כתובת..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleManualSearch()}
+            className="text-right"
+            placeholder="הזן את שם האולם או המקום..."
+            value={venueName}
+            onChange={(e) => setVenueName(e.target.value)}
           />
         </div>
-        <Button onClick={handleManualSearch}>חפש</Button>
-        <Button variant="outline" onClick={handleDetectLocation}>
+        
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-right block">כתובת מלאה</label>
+          <Input
+            className="text-right"
+            placeholder="רחוב, עיר, מדינה..."
+            value={venueAddress}
+            onChange={(e) => setVenueAddress(e.target.value)}
+          />
+        </div>
+      </div>
+      
+      <div className="flex gap-2 justify-end">
+        <Button onClick={handleSubmit}>שמור מיקום</Button>
+        <Button variant="outline" onClick={handleDetectLocation} className="flex items-center gap-2">
           <MapPin className="h-4 w-4 ml-2" />
-          <span>איתור מיקום</span>
+          <span>איתור מיקום נוכחי</span>
         </Button>
       </div>
       
-      <div className="bg-wedding-primary/10 p-3 rounded-md">
-        <p className="text-sm text-gray-600 text-right">בחר מיקום מהרשימה או אתר את מיקומך הנוכחי בעזרת הכפתור. המיקום שנבחר יופיע במפה באתר שלך.</p>
+      <div className="bg-wedding-primary/10 p-3 rounded-md text-right">
+        <p className="text-sm text-gray-600">הזן את שם המקום והכתובת המלאה, או לחץ על כפתור איתור מיקום. המיקום שנבחר יופיע במפה באתר שלך.</p>
       </div>
     </div>
   );

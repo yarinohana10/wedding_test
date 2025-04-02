@@ -5,6 +5,7 @@ import { useWindowSize } from '@/hooks/use-window-size';
 
 export default function ConfettiLoader() {
   const [isActive, setIsActive] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const { width, height } = useWindowSize();
 
   useEffect(() => {
@@ -15,12 +16,14 @@ export default function ConfettiLoader() {
       // Set as visited for future reference
       localStorage.setItem('hasVisitedBefore', 'true');
       
-      // Activate confetti
+      // Activate confetti with fade-in animation
       setIsActive(true);
+      setTimeout(() => setIsVisible(true), 100);
       
-      // Run confetti for 8 seconds (longer duration)
+      // Run confetti for 8 seconds and add fade-out animation
       const timer = setTimeout(() => {
-        setIsActive(false);
+        setIsVisible(false); // Start fade-out
+        setTimeout(() => setIsActive(false), 1000); // Remove component after animation
       }, 8000);
       
       return () => clearTimeout(timer);
@@ -30,7 +33,9 @@ export default function ConfettiLoader() {
   if (!isActive) return null;
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none">
+    <div 
+      className={`fixed inset-0 z-50 pointer-events-none transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+    >
       <Confetti
         width={width}
         height={height}
