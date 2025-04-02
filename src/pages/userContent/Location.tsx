@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Navbar from '@/pages/layout/Navbar';
+import Footer from '@/pages/layout/Footer';
 import { MapPin, Navigation, Car, Clock, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

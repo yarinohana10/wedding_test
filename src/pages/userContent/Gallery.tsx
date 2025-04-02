@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import Navbar from "@/pages/layout/Navbar";
+import Footer from "@/pages/layout/Footer";
 import { Images, Heart, ChevronDown, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

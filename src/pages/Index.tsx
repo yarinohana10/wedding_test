@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import HeroSection from "@/components/landing/HeroSection";
-import Countdown from "@/components/landing/Countdown";
+import Navbar from "@/pages/layout/Navbar";
+import Footer from "@/pages/layout/Footer";
+import HeroSection from "@/pages/userContent/landing/HeroSection";
+import Countdown from "@/pages/userContent/landing/Countdown";
 
-import RsvpForm from "@/components/rsvp/RsvpForm";
+import Rsvp from "@/pages/userContent/rsvp/Rsvp";
 import { Button } from "@/components/ui/button";
 import { Image, Heart, Clock, Calendar, MapPin } from "lucide-react";
 import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
@@ -63,7 +63,7 @@ const Index = () => {
         heroImages={weddingData.heroImages}
       />
       <Countdown targetDate={weddingData.targetDate} />
-      <RsvpForm />
+      <Rsvp />
       <GoToGallery />
       <Footer />
     </div>

@@ -42,7 +42,7 @@ const foodOptions = [
   { value: "gluten-free", label: "ללא גלוטן" },
 ];
 
-const RsvpForm = () => {
+const Rsvp = () => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
@@ -324,4 +324,4 @@ const RsvpForm = () => {
   );
 };
 
-export default RsvpForm;
+export default Rsvp;

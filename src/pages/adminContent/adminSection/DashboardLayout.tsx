@@ -1,18 +1,11 @@
+import React, { useState } from "react";
+import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 
-import React, { useState } from 'react';
-import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
-import { SidebarNav } from './SidebarNav';
-import { 
-  UsersRound, 
-  Settings, 
-  LogOut,
-  Menu,
-  X,
-  HomeIcon
-} from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { UsersRound, Settings, LogOut, Menu, X, HomeIcon } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SidebarNav } from "./SidebarNav";
 
 export interface NavItem {
   title: string;
@@ -45,12 +38,12 @@ const DashboardLayout = () => {
       title: "התנתקות מוצלחת",
       description: "הועברת לדף הבית",
     });
-    
-    navigate('/');
+
+    navigate("/");
   };
 
   const navigateHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -59,10 +52,10 @@ const DashboardLayout = () => {
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <span className="font-medium text-wedding-dark">ניהול אירוע</span>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="mr-auto" 
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mr-auto"
               onClick={navigateHome}
             >
               <HomeIcon className="h-4 w-4 ml-1" />
@@ -73,7 +66,7 @@ const DashboardLayout = () => {
             <SidebarNav items={dashboardNavItems} />
           </div>
           <div className="mt-auto p-4">
-            <button 
+            <button
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted"
               onClick={handleLogout}
             >
@@ -83,7 +76,7 @@ const DashboardLayout = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile Navigation */}
       <div className="fixed top-0 left-0 right-0 z-20 flex h-14 items-center justify-between border-b bg-wedding-light px-4 lg:hidden">
         <Sheet open={open} onOpenChange={setOpen}>
@@ -93,11 +86,18 @@ const DashboardLayout = () => {
               <span className="sr-only">פתח תפריט</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="max-w-xs bg-gradient-to-b from-wedding-light to-wedding-primary/10">
+          <SheetContent
+            side="right"
+            className="max-w-xs bg-gradient-to-b from-wedding-light to-wedding-primary/10"
+          >
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between border-b h-14 px-4">
                 <h2 className="font-semibold">ניהול אירוע</h2>
-                <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setOpen(false)}
+                >
                   <X className="h-5 w-5" />
                 </Button>
               </div>
@@ -111,9 +111,9 @@ const DashboardLayout = () => {
                         key={index}
                         to={item.href}
                         className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
-                          isActive 
-                            ? 'bg-wedding-primary/20 text-wedding-dark font-medium' 
-                            : 'text-muted-foreground hover:bg-wedding-primary/10 hover:text-wedding-dark'
+                          isActive
+                            ? "bg-wedding-primary/20 text-wedding-dark font-medium"
+                            : "text-muted-foreground hover:bg-wedding-primary/10 hover:text-wedding-dark"
                         }`}
                         onClick={() => setOpen(false)}
                       >
@@ -125,10 +125,10 @@ const DashboardLayout = () => {
                 </nav>
               </div>
               <div className="mt-auto p-4 border-t">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="mb-4 w-full justify-start text-wedding-dark" 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mb-4 w-full justify-start text-wedding-dark"
                   onClick={() => {
                     navigateHome();
                     setOpen(false);
@@ -137,7 +137,7 @@ const DashboardLayout = () => {
                   <HomeIcon className="h-4 w-4 ml-2" />
                   <span>דף הבית</span>
                 </Button>
-                <button 
+                <button
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-wedding-dark hover:bg-wedding-primary/10"
                   onClick={() => {
                     handleLogout();
@@ -152,11 +152,7 @@ const DashboardLayout = () => {
           </SheetContent>
         </Sheet>
         <span className="font-medium">ניהול אירוע</span>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={navigateHome}
-        >
+        <Button variant="ghost" size="sm" onClick={navigateHome}>
           <HomeIcon className="h-4 w-4 ml-1" />
           <span className="sr-only md:not-sr-only">דף הבית</span>
         </Button>

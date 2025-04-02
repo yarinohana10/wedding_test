@@ -1,7 +1,7 @@
 
 import React from 'react';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Navbar from '@/pages/layout/Navbar';
+import Footer from '@/pages/layout/Footer';
 
 const Privacy = () => {
   return (
