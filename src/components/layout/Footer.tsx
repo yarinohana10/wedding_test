@@ -1,62 +1,89 @@
 
 import React from 'react';
-import { Heart, Phone, Mail, MapPin, FileText, Accessibility } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Heart, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white py-8 mt-16 border-t border-gray-100">
-      <div className="container mx-auto px-4">
+    <footer className="bg-gray-800 text-white">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-start">
-            <div className="flex items-center mb-4">
-              <Heart className="h-5 w-5 text-wedding-primary mr-2" fill="currentColor" />
-              <span className="font-heebo font-medium">Wedding Joy</span>
-            </div>
-            <p className="text-sm text-gray-500 mb-4">
-              אנו מספקים פתרונות ייחודיים לניהול אירועי חתונה, עם דגש על חוויית משתמש מעולה וממשק אינטראקטיבי.
+          <div className="text-center md:text-right">
+            <h3 className="text-lg font-semibold mb-4 flex items-center justify-center md:justify-end">
+              <Heart className="text-wedding-primary h-5 w-5 ml-2" fill="currentColor" />
+              <span>דנה & יוסי</span>
+            </h3>
+            <p className="text-gray-300 text-sm">
+              אתר החתונה שלנו נוצר כדי לחלוק את השמחה עם המשפחה והחברים.
+              אנו מודים לכם על שאתם חלק מהיום המיוחד שלנו.
             </p>
           </div>
           
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium mb-4">מידע חשוב</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li className="flex items-center">
-                <FileText className="h-4 w-4 mr-2 text-wedding-primary" />
-                <Link to="/terms" className="hover:text-wedding-accent transition">תקנון שימוש</Link>
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-4">קישורים מהירים</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to="/" className="text-gray-300 hover:text-wedding-primary transition-colors">
+                  דף הבית
+                </Link>
               </li>
-              <li className="flex items-center">
-                <Accessibility className="h-4 w-4 mr-2 text-wedding-primary" />
-                <Link to="/accessibility" className="hover:text-wedding-accent transition">מדיניות נגישות</Link>
+              <li>
+                <Link to="/gallery" className="text-gray-300 hover:text-wedding-primary transition-colors">
+                  גלריה
+                </Link>
               </li>
-              <li className="flex items-center">
-                <FileText className="h-4 w-4 mr-2 text-wedding-primary" />
-                <Link to="/privacy" className="hover:text-wedding-accent transition">מדיניות פרטיות</Link>
+              <li>
+                <Link to="/location" className="text-gray-300 hover:text-wedding-primary transition-colors">
+                  מיקום האירוע
+                </Link>
+              </li>
+              <li>
+                <Link to="/gift" className="text-gray-300 hover:text-wedding-primary transition-colors">
+                  השאירו מתנה
+                </Link>
               </li>
             </ul>
           </div>
           
-          <div className="flex flex-col items-start">
-            <h3 className="font-medium mb-4">צור קשר</h3>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li className="flex items-center">
-                <Phone className="h-4 w-4 mr-2 text-wedding-primary" />
-                <a href="tel:+972501234567" className="hover:text-wedding-accent transition">050-1234567</a>
-              </li>
-              <li className="flex items-center">
-                <Mail className="h-4 w-4 mr-2 text-wedding-primary" />
-                <a href="mailto:contact@wedding-joy.com" className="hover:text-wedding-accent transition">contact@wedding-joy.com</a>
-              </li>
-              <li className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2 text-wedding-primary" />
-                <span>רחוב השלום 123, תל אביב</span>
-              </li>
-            </ul>
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold mb-4">צרו קשר</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-center md:justify-start">
+                <Phone className="h-5 w-5 ml-2" />
+                <span className="text-gray-300">054-1234567</span>
+              </div>
+              <div className="flex items-center justify-center md:justify-start">
+                <Mail className="h-5 w-5 ml-2" />
+                <span className="text-gray-300">couple@wedding.com</span>
+              </div>
+              <div className="flex items-center justify-center md:justify-start">
+                <MapPin className="h-5 w-5 ml-2" />
+                <span className="text-gray-300">רחוב הפרחים 123, תל אביב</span>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div className="border-t border-gray-100 mt-8 pt-6 text-center">
-          <p className="text-sm text-gray-500">© {new Date().getFullYear()} Wedding Joy. כל הזכויות שמורות.</p>
+        <hr className="border-gray-700 my-6" />
+        
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="mb-4 md:mb-0">
+            <p className="text-gray-400 text-sm">
+              © 2023 דנה ויוסי. כל הזכויות שמורות.
+            </p>
+          </div>
+          
+          <div className="flex space-x-4 space-x-reverse">
+            <Link to="/terms" className="text-gray-400 text-sm hover:text-wedding-primary transition-colors">
+              תקנון
+            </Link>
+            <Link to="/privacy" className="text-gray-400 text-sm hover:text-wedding-primary transition-colors">
+              פרטיות
+            </Link>
+            <Link to="/accessibility" className="text-gray-400 text-sm hover:text-wedding-primary transition-colors">
+              נגישות
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

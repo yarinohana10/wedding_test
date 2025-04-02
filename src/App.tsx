@@ -15,6 +15,10 @@ import DashboardGuests from "./pages/DashboardGuests";
 import DashboardMessages from "./pages/DashboardMessages";
 import DashboardSettings from "./pages/DashboardSettings";
 import Gift from "./pages/Gift";
+import Rsvp from "./pages/Rsvp";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Accessibility from "./pages/Accessibility";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +34,12 @@ const App = () => (
           <Route path="/location" element={<Location />} />
           <Route path="/login" element={<Login />} />
           <Route path="/gift" element={<Gift />} />
+          <Route path="/rsvp" element={<Rsvp />} />
+          
+          {/* Footer pages */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/accessibility" element={<Accessibility />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
