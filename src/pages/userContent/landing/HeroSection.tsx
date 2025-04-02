@@ -17,7 +17,7 @@ interface HeroSectionProps {
 const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
 
   const scrollToRsvp = () => {
-    const rsvpElement = document.getElementById('rsvp-section');
+    const rsvpElement = document.getElementById('rsvp');
     if (rsvpElement) {
       rsvpElement.scrollIntoView({ behavior: 'smooth' });
     }

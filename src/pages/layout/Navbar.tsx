@@ -1,16 +1,19 @@
+import React, { useState, useEffect } from "react";
+import { NavLink, Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Heart, Menu, X, Gift, User } from "lucide-react";
+import { weddingData } from "@/pages/Index";
 
-import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Heart, Menu, X, Gift } from 'lucide-react';
-import { weddingData } from '@/pages/Index';
+export const navLinkClasses =
+  "px-3 py-2 text-gray-600 hover:text-wedding-primary transition-colors";
+export const activeNavLinkClasses = "text-wedding-primary font-medium";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((value) => !value);
   };
 
   useEffect(() => {
@@ -22,25 +25,35 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  const navLinkClasses = "px-3 py-2 text-gray-600 hover:text-wedding-primary transition-colors";
-  const activeNavLinkClasses = "text-wedding-primary font-medium";
-
   return (
-    <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'}`}>
+    <header
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
+      }`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <Heart className={`h-6 w-6 ${isScrolled ? 'text-wedding-primary' : 'text-white'}`} fill="currentColor" />
-              <span className={`font-bold text-lg mr-2 ${isScrolled ? 'text-gray-800' : 'text-white'}`}>
+              <Heart
+                className={`h-6 w-6 ${
+                  isScrolled ? "text-wedding-primary" : "text-white"
+                }`}
+                fill="currentColor"
+              />
+              <span
+                className={`font-bold text-lg mr-2 ${
+                  isScrolled ? "text-gray-800" : "text-white"
+                }`}
+              >
                 {weddingData.coupleName}
               </span>
             </Link>
@@ -51,7 +64,9 @@ const Navbar = () => {
             <NavLink
               to="/"
               className={({ isActive }) =>
-                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} ${isScrolled ? '' : 'text-white hover:text-white/80'}`
+                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ""} ${
+                  isScrolled ? "" : "text-white hover:text-white/80"
+                }`
               }
               end
             >
@@ -60,7 +75,9 @@ const Navbar = () => {
             <NavLink
               to="/gallery"
               className={({ isActive }) =>
-                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} ${isScrolled ? '' : 'text-white hover:text-white/80'}`
+                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ""} ${
+                  isScrolled ? "" : "text-white hover:text-white/80"
+                }`
               }
             >
               גלריה
@@ -68,7 +85,9 @@ const Navbar = () => {
             <NavLink
               to="/location"
               className={({ isActive }) =>
-                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ''} ${isScrolled ? '' : 'text-white hover:text-white/80'}`
+                `${navLinkClasses} ${isActive ? activeNavLinkClasses : ""} ${
+                  isScrolled ? "" : "text-white hover:text-white/80"
+                }`
               }
             >
               מיקום
@@ -77,7 +96,9 @@ const Navbar = () => {
               <Button
                 asChild
                 variant={isScrolled ? "default" : "secondary"}
-                className={`bg-wedding-primary text-white hover:bg-wedding-accent flex items-center gap-3 ${!isScrolled && "border border-white"}`}
+                className={`bg-wedding-primary text-white hover:bg-wedding-accent flex items-center gap-3 ${
+                  !isScrolled && "border border-white"
+                }`}
               >
                 <Link to="/gift">
                   <Gift className="h-4 w-4" />
@@ -88,11 +109,13 @@ const Navbar = () => {
             <Button
               asChild
               variant="outline"
-              className={isScrolled ? "bg-white text-gray-800 border-gray-300" : "bg-transparent text-white border-white hover:bg-white/20"}
+              className={
+                isScrolled
+                  ? "bg-white text-gray-800 border-gray-300"
+                  : "bg-transparent text-white border-white hover:bg-white/20"
+              }
             >
-              <Link to="/login">
-                התחברות
-              </Link>
+              <Link to="/login">התחברות</Link>
             </Button>
           </nav>
 
@@ -113,64 +136,86 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex justify-between items-center mb-8">
-              <Link to="/" className="flex items-center" onClick={() => setIsMenuOpen(false)}>
-                <Heart className="h-6 w-6 text-wedding-primary" fill="currentColor" />
-                <span className="font-bold text-lg mr-2 text-gray-800">
-                  דנה & יוסי
-                </span>
-              </Link>
-              <Button onClick={toggleMenu} variant="ghost" size="icon">
-                <X className="h-6 w-6" />
-              </Button>
+          <div className="h-full container mx-auto px-4 py-6 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center mb-8">
+                <Link
+                  to="/"
+                  className="flex items-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Heart
+                    className="h-6 w-6 text-wedding-primary"
+                    fill="currentColor"
+                  />
+                  <span className="font-bold text-lg mr-2 text-gray-800">
+                    {weddingData.coupleName}
+                  </span>
+                </Link>
+                <Button onClick={toggleMenu} variant="ghost" size="icon">
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+              <nav className="flex flex-col space-y-4">
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `text-lg py-2 ${
+                      isActive
+                        ? "text-wedding-accent font-medium"
+                        : "text-gray-800"
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                  end
+                >
+                  דף הבית
+                </NavLink>
+                <NavLink
+                  to="/gallery"
+                  className={({ isActive }) =>
+                    `text-lg py-2 ${
+                      isActive
+                        ? "text-wedding-accent font-medium"
+                        : "text-gray-800"
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  גלריה
+                </NavLink>
+                <NavLink
+                  to="/location"
+                  className={({ isActive }) =>
+                    `text-lg py-2 ${
+                      isActive
+                        ? "text-wedding-accent font-medium"
+                        : "text-gray-800"
+                    }`
+                  }
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  מיקום
+                </NavLink>
+                <Link
+                  to="/gift"
+                  className="text-lg py-2 text-wedding-primary font-medium flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>השאירו מתנה</span>
+                  <Gift className="h-5 w-5" />
+                </Link>
+              </nav>
             </div>
 
-            <nav className="flex flex-col space-y-4">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  `text-lg py-2 ${isActive ? 'text-wedding-primary font-medium' : 'text-gray-800'}`
-                }
-                onClick={() => setIsMenuOpen(false)}
-                end
-              >
-                דף הבית
-              </NavLink>
-              <NavLink
-                to="/gallery"
-                className={({ isActive }) =>
-                  `text-lg py-2 ${isActive ? 'text-wedding-primary font-medium' : 'text-gray-800'}`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                גלריה
-              </NavLink>
-              <NavLink
-                to="/location"
-                className={({ isActive }) =>
-                  `text-lg py-2 ${isActive ? 'text-wedding-primary font-medium' : 'text-gray-800'}`
-                }
-                onClick={() => setIsMenuOpen(false)}
-              >
-                מיקום
-              </NavLink>
-              <Link
-                to="/gift"
-                className="text-lg py-2 text-wedding-primary font-medium flex items-center gap-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Gift className="h-5 w-5" />
-                <span>השאירו מתנה</span>
-              </Link>
-              <Link
-                to="/login"
-                className="text-lg py-2 text-gray-800"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                התחברות
-              </Link>
-            </nav>
+            <Link
+              to="/login"
+              className="text-lg py-2 text-gray-800 font-medium flex items-center gap-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              התחברות
+              <User />
+            </Link>
           </div>
         </div>
       )}

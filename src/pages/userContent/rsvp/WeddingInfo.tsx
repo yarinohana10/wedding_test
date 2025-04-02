@@ -103,11 +103,10 @@ const WeddingInfo = () => {
           className="w-full h-full"
         />
       </div>
-
-      <div className="m-10 gap-10 flex justify-beetween">
+      <div className="flex my-4 gap-4 w-full flex-wrap">
         <Button
-          variant="outline"
-          className="flex w-full items-center gap-2 bg-wedding-primary"
+          type="submit"
+          className="w-full bg-wedding-accent hover:bg-gray-400 text-white min-w-40 py-6 text-lg"
           onClick={() =>
             window.open(
               `https://waze.com/ul?ll=${weddingData.coordinates.lat},${weddingData.coordinates.lng}&navigate=yes`,
@@ -122,10 +121,9 @@ const WeddingInfo = () => {
             className="w-5 h-5"
           />
         </Button>
-
         <Button
-          variant="outline"
-          className="flex w-full items-center gap-2 bg-wedding-primary"
+          type="submit"
+          className="w-full bg-wedding-accent hover:bg-gray-400 text-white min-w-40 py-6 text-lg"
           onClick={() =>
             window.open(
               `https://www.google.com/maps/dir/?api=1&destination=${weddingData.coordinates.lat},${weddingData.coordinates.lng}`,

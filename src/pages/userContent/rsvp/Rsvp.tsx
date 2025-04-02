@@ -114,7 +114,7 @@ const Rsvp = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl p-8 m-8 shadow-xl ">
+    <div id="rsvp" className="bg-white rounded-xl p-8 m-8 shadow-xl ">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-4">אישור הזמנה</h2>
         <div className="divider-heart mb-4">
@@ -294,7 +294,7 @@ const Rsvp = () => {
             <p className="text-center mb-4 font-medium">
               האם תוכל/י להגיע לאירוע?
             </p>
-            <div className="flex gap-4 w-full">
+            <div className="flex gap-4 w-full flex-wrap">
               <Button
                 type="submit"
                 className="w-full bg-gray-400 hover:bg-wedding-accent text-white min-w-40 py-6 text-lg"

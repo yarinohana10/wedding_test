@@ -53,8 +53,8 @@ const Index = () => {
       <ReactConfetti
         recycle={false}
         colors={colors}
-        className="w-full h-full"
         numberOfPieces={700}
+        className="w-full h-full"
       />
       <Navbar />
       <HeroSection
