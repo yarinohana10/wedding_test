@@ -31,7 +31,7 @@ const Location = () => {
     // Load Google Maps API script dynamically
     const googleMapsApiKey = 'REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initMap&language=he`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);

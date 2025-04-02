@@ -65,10 +65,8 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultV
       componentRestrictions: { country: 'il' } // Restrict to Israel
     });
     
-    // Set the default search language to Hebrew
-    autocompleteRef.current.setOptions({
-      language: 'he'
-    });
+    // Note: We're not setting language here as it's not part of the AutocompleteOptions type
+    // Instead, we'll set it via the script URL parameter when loading the API
     
     // Add listener for place selection
     autocompleteRef.current.addListener('place_changed', () => {
@@ -171,8 +169,11 @@ const VenueSelector: React.FC<VenueSelectorProps> = ({ onVenueSelected, defaultV
           geocoder.geocode({ location: { lat: latitude, lng: longitude } }, (results, status) => {
             if (status === 'OK' && results && results[0]) {
               const place = results[0];
+              // GeocoderResult doesn't have a 'name' property, so we'll use formatted_address instead
+              const venueName = place.formatted_address?.split(',')[0] || 'המיקום הנוכחי שלי';
+              
               const venueData = {
-                name: place.name || place.formatted_address || 'המיקום הנוכחי שלי',
+                name: venueName,
                 address: place.formatted_address || '',
                 lat: latitude,
                 lng: longitude
