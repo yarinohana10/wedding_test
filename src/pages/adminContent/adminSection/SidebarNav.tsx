@@ -1,30 +1,29 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import { Settings, Users, HelpCircle, LogOut, X } from "lucide-react";
 
-import React from "react";
-import { useLocation } from "react-router-dom";
-import { DashboardNavProps } from "./DashboardLayout";
-import { Heart, Home, Settings, Users, Mail, HelpCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { NavLink } from "./nav/NavLink";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
-const SidebarNav = ({ className, ...props }: DashboardNavProps) => {
+const SidebarNav = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const handleLogout = () => {
+    // In a real app, this would clear authentication state, tokens, etc.
+    toast({
+      title: "התנתקות מוצלחת",
+      description: "הועברת לדף הבית",
+    });
+    navigate("/");
+  };
+
   const links = [
-    {
-      title: "כללי",
-      href: "/dashboard/",
-      icon: <Home className="h-4 w-4 ml-2" />,
-    },
     {
       title: "מוזמנים",
       href: "/dashboard/guests",
       icon: <Users className="h-4 w-4 ml-2" />,
-    },
-    {
-      title: "הודעות",
-      href: "/dashboard/messages",
-      icon: <Mail className="h-4 w-4 ml-2" />,
     },
     {
       title: "הגדרות",
@@ -39,20 +38,27 @@ const SidebarNav = ({ className, ...props }: DashboardNavProps) => {
   ];
 
   return (
-    <nav
-      className={cn("flex md:flex-col space-y-0 md:space-y-1 space-x-0", className)}
-      {...props}
-    >
-      {links.map((link) => (
-        <NavLink 
-          key={link.href}
-          href={link.href}
-          isActive={link.href === pathname}
-          icon={link.icon}
-          title={link.title}
-        />
-      ))}
-    </nav>
+    <div className={"flex flex-col h-full justify-between overflow-auto"}>
+      <nav className={"flex flex-col gap-1"}>
+        {links.map((link) => (
+          <NavLink
+            key={link.href}
+            href={link.href}
+            icon={link.icon}
+            title={link.title}
+            isActive={link.href === pathname}
+          />
+        ))}
+      </nav>
+      <Button
+        variant="ghost"
+        onClick={handleLogout}
+        className="text-muted-foreground flex w-full items-center justify-start gap-2 hover:text-foreground hover:bg-wedding-accent/20"
+      >
+        <LogOut className="h-4 w-4" />
+        <span>התנתקות</span>
+      </Button>
+    </div>
   );
 };
 
