@@ -31,7 +31,7 @@ const dashboardNavItems: NavItem[] = [
   },
 ];
 
-const DashboardLayout = () => {
+function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -170,6 +170,6 @@ const DashboardLayout = () => {
       </div>
     </div>
   );
-};
+}
 
 export default DashboardLayout;
