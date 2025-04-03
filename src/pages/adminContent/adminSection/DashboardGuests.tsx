@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
@@ -20,10 +21,9 @@ import {
   Loader2,
   X,
   CheckCircle2,
-  XCircle,
-  Save,
-  FilePlus,
   FileUp,
+  FilePlus,
+  Save,
 } from "lucide-react";
 import {
   Dialog,
@@ -158,7 +158,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
 const DashboardGuests = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
-  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -178,7 +177,7 @@ const DashboardGuests = () => {
     phone: "",
     guests: 1,
     status: "טרם אישר",
-    food: "-",
+    food: "רגיל", // Changed default to "רגיל" as requested
   });
 
   // Summary stats
@@ -195,7 +194,6 @@ const DashboardGuests = () => {
     setError(null);
 
     try {
-      // Using type assertion to work around TypeScript limitations with Supabase schema
       const { data, error } = (await supabase
         .from("guests")
         .select("*")
@@ -231,8 +229,7 @@ const DashboardGuests = () => {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "guests" },
-        (payload) => {
-          console.log("Realtime update:", payload);
+        () => {
           fetchGuests(); // Refresh data when changes occur
         }
       )
@@ -278,7 +275,6 @@ const DashboardGuests = () => {
     if (guestToDelete) {
       setIsLoading(true);
       try {
-        // Using type assertion to work around TypeScript limitations
         const { error } = (await supabase
           .from("guests")
           .delete()
@@ -316,7 +312,6 @@ const DashboardGuests = () => {
     try {
       const updatedGuest = { ...guest, [field]: value };
 
-      // Using type assertion to work around TypeScript limitations
       const { error } = (await supabase
         .from("guests")
         .update({ [field]: value })
@@ -372,7 +367,6 @@ const DashboardGuests = () => {
         return;
       }
 
-      // Using type assertion to work around TypeScript limitations
       const { data, error } = (await supabase
         .from("guests")
         .insert([newGuest])
@@ -407,7 +401,7 @@ const DashboardGuests = () => {
         phone: "",
         guests: 1,
         status: "טרם אישר",
-        food: "-",
+        food: "רגיל", // Changed default to "רגיל"
       });
     }
   };
@@ -580,7 +574,7 @@ const DashboardGuests = () => {
               phone: phone.toString(),
               guests: 1,
               status: "טרם אישר",
-              food: "-",
+              food: "רגיל", // Changed default to "רגיל"
             });
           }
 
@@ -681,6 +675,11 @@ const DashboardGuests = () => {
       default:
         return "bg-amber-100 text-amber-800";
     }
+  };
+
+  // Filter guests based on status card click
+  const filterByStatus = (status: string) => {
+    setFilterStatus(status);
   };
 
   // Mobile card view for guest
@@ -795,7 +794,7 @@ const DashboardGuests = () => {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center">
-          <XCircle className="h-10 w-10 mx-auto mb-4 text-destructive" />
+          <X className="h-10 w-10 mx-auto mb-4 text-destructive" />
           <p className="text-destructive font-medium mb-2">
             שגיאה בטעינת נתונים
           </p>
@@ -820,7 +819,10 @@ const DashboardGuests = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <Card className="p-4 border-wedding-primary/20 bg-wedding-light">
+        <Card 
+          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+          onClick={() => filterByStatus("אישר הגעה")}
+        >
           <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
           <div className="mt-2 flex items-center justify-between">
             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
@@ -833,7 +835,10 @@ const DashboardGuests = () => {
           </div>
         </Card>
 
-        <Card className="p-4 border-wedding-primary/20 bg-wedding-light">
+        <Card 
+          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+          onClick={() => filterByStatus("לא מגיע")}
+        >
           <h3 className="text-lg font-medium text-right">לא מגיעים</h3>
           <div className="mt-2 flex items-center justify-between">
             <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
@@ -846,7 +851,10 @@ const DashboardGuests = () => {
           </div>
         </Card>
 
-        <Card className="p-4 border-wedding-primary/20 bg-wedding-light">
+        <Card 
+          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+          onClick={() => filterByStatus("טרם אישר")}
+        >
           <h3 className="text-lg font-medium text-right">טרם אישרו</h3>
           <div className="mt-2 flex items-center justify-between">
             <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -870,7 +878,10 @@ const DashboardGuests = () => {
           </div>
         </Card>
 
-        <Card className="p-4 border-wedding-primary/20 bg-wedding-light">
+        <Card 
+          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+          onClick={() => filterByStatus("all")}
+        >
           <h3 className="text-lg font-medium text-right">סה"כ הזמנות</h3>
           <div className="mt-2 flex items-center justify-between">
             <div className="h-12 w-12 rounded-full bg-wedding-primary/20 flex items-center justify-center">

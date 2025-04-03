@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, X, Gift, User } from "lucide-react";
+import { Heart, Menu, X, Gift } from "lucide-react";
 import { weddingData } from "@/pages/Index";
 
 export const navLinkClasses =
@@ -35,11 +36,11 @@ const Navbar = () => {
         window.removeEventListener("scroll", handleScroll);
       };
     }
-  }, []);
+  }, [pathname]);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 py-4 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 ${
         isScrolled ? "bg-white shadow-md" : "bg-transparent"
       }`}
     >
@@ -219,7 +220,6 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               התחברות
-              <User />
             </Link>
           </div>
         </div>
