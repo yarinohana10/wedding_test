@@ -13,10 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, Settings } from "lucide-react";
 
 // Import components
-import EventDetailsForm from "@/components/settings/EventDetailsForm";
-import HeroImagesSection from "@/components/settings/HeroImagesSection";
-import GalleryManager from "@/components/settings/GalleryManager";
-import MessageTemplates from "@/components/settings/MessageTemplates";
+import EventDetailsForm from "@/pages/adminContent/adminSection/settings/EventDetailsForm";
+import HeroImagesSection from "@/pages/adminContent/adminSection/settings/HeroImagesSection";
+import GalleryManager from "@/pages/adminContent/adminSection/settings/GalleryManager";
+import MessageTemplates from "@/pages/adminContent/adminSection/settings/MessageTemplates";
 
 interface GalleryImage {
   id: number;

@@ -12,7 +12,6 @@ import { Gift as GiftIcon, CreditCard, Building, Copy, Check, Heart } from "luci
 const Gift = () => {
   const { toast } = useToast();
   const [copied, setCopied] = useState<string | null>(null);
-  const [selectedTab, setSelectedTab] = useState<'bank' | 'address'>('bank');
   const [formData, setFormData] = useState({
     name: '',
     email: '',

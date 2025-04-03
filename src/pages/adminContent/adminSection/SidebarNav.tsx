@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Settings, Users, HelpCircle, LogOut, X } from "lucide-react";
 
-import { NavLink } from "./nav/NavLink";
+import { NavLink } from "./NavLink";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 

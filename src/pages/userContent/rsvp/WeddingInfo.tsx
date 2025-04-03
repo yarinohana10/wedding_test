@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar, MapPin } from "lucide-react";
 import { formatHebrewDate, getDayOfWeek } from "@/lib/date";

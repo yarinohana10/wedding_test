@@ -7,8 +7,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NotFound from "./components/NotFound";
 import DashboardGuests from "./pages/adminContent/adminSection/DashboardGuests";
 import DashboardSettings from "./pages/adminContent/adminSection/DashboardSettings";
-import DashboardMessages from "./pages/adminContent/adminSection/DashboardMessages";
-import Dashboard from "./pages/adminContent/adminSection/Dashboard";
 import ForgotPassword from "./pages/adminContent/auth/ForgotPassword";
 import Login from "./pages/adminContent/auth/Login";
 import Register from "./pages/adminContent/auth/Register";

@@ -1,11 +1,16 @@
-
-import React from 'react';
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { Save } from "lucide-react";
-import { MessageTemplates } from '../DashboardMessages';
 
+export interface MessageTemplates {
+  invitation: string;
+  reminder: string;
+  dayBefore: string;
+  eventDay: string;
+  thankYou: string;
+}
 interface MessageTemplateEditorProps {
   templateKey: keyof MessageTemplates;
   templateText: string;
@@ -13,17 +18,17 @@ interface MessageTemplateEditorProps {
 }
 
 const templateTitles = {
-  invitation: 'הזמנה',
-  reminder: 'תזכורת',
-  dayBefore: 'יום לפני',
-  eventDay: 'יום האירוע',
-  thankYou: 'תודה'
+  invitation: "הזמנה",
+  reminder: "תזכורת",
+  dayBefore: "יום לפני",
+  eventDay: "יום האירוע",
+  thankYou: "תודה",
 };
 
-const MessageTemplateEditor: React.FC<MessageTemplateEditorProps> = ({ 
-  templateKey, 
-  templateText, 
-  onChange 
+const MessageTemplateEditor: React.FC<MessageTemplateEditorProps> = ({
+  templateKey,
+  templateText,
+  onChange,
 }) => {
   const { toast } = useToast();
 
@@ -37,18 +42,21 @@ const MessageTemplateEditor: React.FC<MessageTemplateEditorProps> = ({
 
   return (
     <div>
-      <h3 className="text-lg font-medium mb-2">תבנית הודעת {templateTitles[templateKey]}</h3>
+      <h3 className="text-lg font-medium mb-2">
+        תבנית הודעת {templateTitles[templateKey]}
+      </h3>
       <p className="text-sm text-muted-foreground mb-4">
-        ניתן להשתמש בתגיות [שם], [קישור], [שעה], [מיקום] שיוחלפו בפרטים האמיתיים בעת השליחה.
+        ניתן להשתמש בתגיות [שם], [קישור], [שעה], [מיקום] שיוחלפו בפרטים האמיתיים
+        בעת השליחה.
       </p>
-      
-      <Textarea 
-        value={templateText} 
+
+      <Textarea
+        value={templateText}
         onChange={(e) => onChange(templateKey, e.target.value)}
         rows={6}
         className="mb-4"
       />
-      
+
       <Button onClick={handleSave} className="flex items-center gap-2">
         <Save className="h-4 w-4" />
         <span>שמור שינויים</span>

@@ -1,13 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "@/pages/layout/Navbar";
 import Footer from "@/pages/layout/Footer";
 import HeroSection from "@/pages/userContent/landing/HeroSection";
 import Countdown from "@/pages/userContent/landing/Countdown";
-
 import Rsvp from "@/pages/userContent/rsvp/Rsvp";
-import { Button } from "@/components/ui/button";
-import { Image, Heart, Clock, Calendar, MapPin } from "lucide-react";
 import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
 import ReactConfetti from "react-confetti";
 import GoToGallery from "./userContent/GoToGallery";
