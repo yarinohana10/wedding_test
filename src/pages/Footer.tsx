@@ -1,7 +1,6 @@
-
 import { Link } from "react-router-dom";
 import { Heart, Mail, Phone, MapPin } from "lucide-react";
-import { defaultWeddingData } from "./Index";
+import { weddingData } from "./Index";
 
 const Footer = () => {
   return (
@@ -14,7 +13,7 @@ const Footer = () => {
                 className="text-wedding-primary h-5 w-5 ml-2"
                 fill="currentColor"
               />
-              <span>{defaultWeddingData.coupleName}</span>
+              <span>{weddingData.coupleName}</span>
             </h3>
             <p className="text-gray-300 text-sm">
               אתר החתונה שלנו נוצר כדי לחלוק את השמחה עם המשפחה והחברים. אנו

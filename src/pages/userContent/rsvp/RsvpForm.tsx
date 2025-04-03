@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -73,7 +72,7 @@ const RsvpForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="bg-white rounded-xl p-8 shadow-md text-center max-w-md mx-auto animate-fade-in text-right">
+      <div className="bg-white rounded-xl p-8 m-8 shadow-md text-center max-w-md mx-auto animate-fade-in text-right">
         <div className="flex justify-center mb-6">
           <CheckCircle2 className="h-16 w-16 text-green-500" />
         </div>
@@ -273,7 +272,7 @@ const RsvpForm = () => {
           </p>
           <div className="flex gap-4 w-full flex-wrap">
             <Button
-              type="button"
+              type="submit"
               className="w-full bg-gray-400 hover:bg-wedding-accent text-white min-w-40 py-6 text-lg"
               onClick={() => {
                 form.setValue("attending", "no");

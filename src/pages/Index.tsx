@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import HeroSection from "@/pages/userContent/landing/HeroSection";
@@ -8,8 +7,6 @@ import Rsvp from "@/pages/userContent/rsvp/Rsvp";
 import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
 import ReactConfetti from "react-confetti";
 import GoToGallery from "./userContent/GoToGallery";
-import { fetchEventSettings } from "@/services/eventSettingsService";
-import { type EventSettings } from "@/services/eventSettingsService";
 
 export const targetDate = new Date();
 export const colors = [
@@ -22,8 +19,21 @@ export const colors = [
   "#FFEFD5",
 ];
 
-// Default wedding data as fallback
-export const defaultWeddingData: WeddingData = {
+export interface WeddingData {
+  date: string;
+  time: string;
+  venue: string;
+  address: string;
+  targetDate: Date;
+  coupleName: string;
+  heroImages: string[];
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export const weddingData: WeddingData = {
   coupleName: "דנה & יוסי",
   date: `יום ${getDayOfWeek(targetDate)}, ${formatHebrewDate(targetDate)}`,
   venue: "אולמי הגן הקסום",
@@ -41,64 +51,10 @@ export const defaultWeddingData: WeddingData = {
   ],
 };
 
-export interface WeddingData {
-  date: string;
-  time: string;
-  venue: string;
-  address: string;
-  targetDate: Date;
-  coupleName: string;
-  heroImages: string[];
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-}
-
 const Index = () => {
-  const [weddingData, setWeddingData] = useState<WeddingData>(defaultWeddingData);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const settings = await fetchEventSettings();
-        if (settings) {
-          // Convert from EventSettings to WeddingData
-          const eventDate = new Date(settings.event_date);
-          const updatedData: WeddingData = {
-            coupleName: settings.couple_name,
-            date: `יום ${getDayOfWeek(eventDate)}, ${formatHebrewDate(eventDate)}`,
-            time: eventDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
-            venue: settings.venue,
-            address: settings.address,
-            targetDate: eventDate,
-            coordinates: settings.venue_coordinates,
-            heroImages: settings.hero_images,
-          };
-          setWeddingData(updatedData);
-        }
-      } catch (error) {
-        console.error("Error fetching wedding data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-    
     document.title = `${weddingData.coupleName} - הזמנה לחתונה`;
   }, []);
-
-  // Update title when weddingData changes
-  useEffect(() => {
-    document.title = `${weddingData.coupleName} - הזמנה לחתונה`;
-  }, [weddingData.coupleName]);
-
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">טוען...</div>;
-  }
 
   return (
     <div>

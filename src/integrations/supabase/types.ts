@@ -9,42 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      event_settings: {
-        Row: {
-          address: string
-          couple_name: string
-          created_at: string | null
-          event_date: string
-          hero_images: Json | null
-          id: string
-          updated_at: string | null
-          venue: string
-          venue_coordinates: Json
-        }
-        Insert: {
-          address: string
-          couple_name: string
-          created_at?: string | null
-          event_date: string
-          hero_images?: Json | null
-          id?: string
-          updated_at?: string | null
-          venue: string
-          venue_coordinates?: Json
-        }
-        Update: {
-          address?: string
-          couple_name?: string
-          created_at?: string | null
-          event_date?: string
-          hero_images?: Json | null
-          id?: string
-          updated_at?: string | null
-          venue?: string
-          venue_coordinates?: Json
-        }
-        Relationships: []
-      }
       guests: {
         Row: {
           created_at: string | null
@@ -74,42 +38,6 @@ export type Database = {
           name?: string
           phone?: string
           status?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      photos: {
-        Row: {
-          approved: boolean | null
-          category: string
-          created_at: string | null
-          description: string | null
-          featured: boolean | null
-          id: string
-          path: string
-          rating: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          approved?: boolean | null
-          category: string
-          created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          path: string
-          rating?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          approved?: boolean | null
-          category?: string
-          created_at?: string | null
-          description?: string | null
-          featured?: boolean | null
-          id?: string
-          path?: string
-          rating?: number | null
           updated_at?: string | null
         }
         Relationships: []

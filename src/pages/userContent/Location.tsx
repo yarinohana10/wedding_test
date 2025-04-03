@@ -1,13 +1,11 @@
-
 import React, { useEffect, useState } from "react";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
-import { MapPin, Navigation, Car, Clock, Phone, Mail, Loader2 } from "lucide-react";
+import { MapPin, Navigation, Car, Clock, Phone, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { fetchEventSettings } from "@/services/eventSettingsService";
 
 const Location = () => {
-  const [venueDetails, setVenueDetails] = useState({
+  const venueDetails = {
     name: "אולמי הגן הקסום",
     address: "רחוב הפרחים 123, תל אביב",
     phone: "03-1234567",
@@ -18,34 +16,9 @@ const Location = () => {
     },
     hours: "א'-ה': 10:00-22:00, ו': 10:00-15:00, שבת: סגור",
     parking: "חניון ציבורי צמוד לאולם (חינם לאורחי האירוע)",
-  });
+  };
 
-  const [loading, setLoading] = useState(true);
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-
-  useEffect(() => {
-    // Fetch venue details from Supabase
-    const fetchVenueDetails = async () => {
-      try {
-        setLoading(true);
-        const settings = await fetchEventSettings();
-        if (settings) {
-          setVenueDetails(prev => ({
-            ...prev,
-            name: settings.venue,
-            address: settings.address,
-            coordinates: settings.venue_coordinates
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching venue details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVenueDetails();
-  }, []);
 
   useEffect(() => {
     // Check if Google Maps is already loaded
@@ -73,7 +46,7 @@ const Location = () => {
   }, []);
 
   useEffect(() => {
-    if (!googleMapsLoaded || loading) return;
+    if (!googleMapsLoaded) return;
 
     const mapElement = document.getElementById("venue-map");
     if (!mapElement) return;
@@ -119,20 +92,7 @@ const Location = () => {
 
     // Open info window by default
     infoWindow.open(map, marker);
-  }, [googleMapsLoaded, venueDetails, loading]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-wedding-primary mr-2" />
-          <span>טוען פרטי מיקום...</span>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  }, [googleMapsLoaded, venueDetails]);
 
   return (
     <div className="min-h-screen flex flex-col">
