@@ -1,3 +1,4 @@
+
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -8,6 +9,8 @@ import DashboardLayout from './pages/adminContent/adminSection/DashboardLayout';
 import NotFound from './components/NotFound';
 import DashboardGuests from './pages/adminContent/adminSection/DashboardGuests';
 import DashboardSettings from './pages/adminContent/adminSection/DashboardSettings';
+import DashboardMessages from './pages/adminContent/adminSection/DashboardMessages';
+import Dashboard from './pages/adminContent/adminSection/Dashboard';
 import ForgotPassword from './pages/adminContent/auth/ForgotPassword';
 import Login from './pages/adminContent/auth/Login';
 import Register from './pages/adminContent/auth/Register';
@@ -47,11 +50,9 @@ const App = () => (
 
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route
-              index
-              element={<Navigate to="/dashboard/guests" replace />}
-            />
+            <Route index element={<Dashboard />} />
             <Route path="guests" element={<DashboardGuests />} />
+            <Route path="messages" element={<DashboardMessages />} />
             <Route path="settings" element={<DashboardSettings />} />
           </Route>
 

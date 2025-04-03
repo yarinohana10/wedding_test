@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { DashboardNavProps } from "@/pages/adminContent/adminSection/DashboardLayout";
+import { DashboardNavProps } from "./DashboardLayout";
 import { Heart, Home, Settings, Users, Mail, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

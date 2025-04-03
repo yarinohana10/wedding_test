@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 
@@ -5,7 +6,7 @@ import { UsersRound, Settings, LogOut, Menu, X, HomeIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SidebarNav } from "./SidebarNav";
+import SidebarNav from "./SidebarNav";
 
 export interface NavItem {
   title: string;
@@ -63,7 +64,7 @@ const DashboardLayout = () => {
             </Button>
           </div>
           <div className="flex-1 overflow-auto py-2">
-            <SidebarNav items={dashboardNavItems} />
+            <SidebarNav className="" />
           </div>
           <div className="mt-auto p-4">
             <button
