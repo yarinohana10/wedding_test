@@ -5,6 +5,7 @@ import { DashboardNavProps } from "./DashboardLayout";
 import { Heart, Home, Settings, Users, Mail, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { NavLink } from "./nav/NavLink";
 
 const SidebarNav = ({ className, ...props }: DashboardNavProps) => {
   const { pathname } = useLocation();
@@ -43,22 +44,13 @@ const SidebarNav = ({ className, ...props }: DashboardNavProps) => {
       {...props}
     >
       {links.map((link) => (
-        <Button
+        <NavLink 
           key={link.href}
-          variant={link.href === pathname ? "secondary" : "ghost"}
-          className={cn(
-            "justify-start w-full text-right hover:bg-wedding-primary/10",
-            link.href === pathname
-              ? "bg-wedding-primary/10 text-wedding-primary font-medium hover:bg-wedding-primary/20"
-              : ""
-          )}
-          asChild
-        >
-          <a href={link.href} className="flex items-center">
-            {link.icon}
-            <span className="hidden md:inline">{link.title}</span>
-          </a>
-        </Button>
+          href={link.href}
+          isActive={link.href === pathname}
+          icon={link.icon}
+          title={link.title}
+        />
       ))}
     </nav>
   );

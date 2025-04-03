@@ -2,14 +2,19 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import { MessageSquare, Save } from "lucide-react";
+import { MessageSquare } from "lucide-react";
+import MessageTemplateEditor from './messages/MessageTemplateEditor';
+
+export interface MessageTemplates {
+  invitation: string;
+  reminder: string;
+  dayBefore: string;
+  eventDay: string;
+  thankYou: string;
+}
 
 const DashboardMessages = () => {
-  const { toast } = useToast();
-  const [messages, setMessages] = useState({
+  const [messages, setMessages] = useState<MessageTemplates>({
     invitation: "היי [שם]! אנחנו שמחים להזמין אותך לחתונה שלנו! נא אשר את הגעתך בקישור: [קישור]",
     reminder: "היי [שם], רק להזכיר שהחתונה שלנו תתקיים בעוד שבוע! נשמח לראותך שם.",
     dayBefore: "היי [שם], החתונה שלנו מחר! אנחנו מצפים לראותך.",
@@ -17,12 +22,8 @@ const DashboardMessages = () => {
     thankYou: "היי [שם], תודה שהגעת לחתונה שלנו! היה לנו כיף גדול ושמחנו לחגוג איתך!"
   });
 
-  const handleSave = (messageType: keyof typeof messages) => {
-    // In a real app, this would save to a database
-    toast({
-      title: "הודעה נשמרה",
-      description: "תבנית ההודעה עודכנה בהצלחה",
-    });
+  const handleMessageChange = (key: keyof MessageTemplates, value: string) => {
+    setMessages(prev => ({...prev, [key]: value}));
   };
 
   return (
@@ -56,27 +57,11 @@ const DashboardMessages = () => {
             
             {Object.entries(messages).map(([key, text]) => (
               <TabsContent key={key} value={key} className="space-y-4">
-                <div>
-                  <h3 className="text-lg font-medium mb-2">תבנית הודעת {key === 'invitation' ? 'הזמנה' : 
-                                                           key === 'reminder' ? 'תזכורת' : 
-                                                           key === 'dayBefore' ? 'יום לפני' : 
-                                                           key === 'eventDay' ? 'יום האירוע' : 'תודה'}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    ניתן להשתמש בתגיות [שם], [קישור], [שעה], [מיקום] שיוחלפו בפרטים האמיתיים בעת השליחה.
-                  </p>
-                  
-                  <Textarea 
-                    value={text} 
-                    onChange={(e) => setMessages(prev => ({...prev, [key]: e.target.value}))}
-                    rows={6}
-                    className="mb-4"
-                  />
-                  
-                  <Button onClick={() => handleSave(key as keyof typeof messages)} className="flex items-center gap-2">
-                    <Save className="h-4 w-4" />
-                    <span>שמור שינויים</span>
-                  </Button>
-                </div>
+                <MessageTemplateEditor 
+                  templateKey={key as keyof MessageTemplates} 
+                  templateText={text} 
+                  onChange={handleMessageChange} 
+                />
               </TabsContent>
             ))}
           </Tabs>
