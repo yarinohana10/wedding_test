@@ -1,7 +1,7 @@
 
 import React from 'react';
-import Navbar from '@/pages/layout/Navbar';
-import Footer from '@/pages/layout/Footer';
+import Navbar from '@/pages/Navbar';
+import Footer from '@/pages/Footer';
 
 const Accessibility = () => {
   return (

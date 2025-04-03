@@ -1,9 +1,8 @@
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Menu, X, Gift } from "lucide-react";
-import { weddingData } from "@/pages/Index";
+import { weddingData } from "./Index";
 
 export const navLinkClasses =
   "px-3 py-2 text-gray-600 hover:text-wedding-primary transition-colors";

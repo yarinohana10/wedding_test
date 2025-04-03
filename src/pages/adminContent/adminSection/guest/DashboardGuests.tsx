@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
 import SummaryCards from "@/pages/adminContent/adminSection/guest/SummaryCards";
-import SearchAndFilterBar from "@/pages/adminContent/adminSection/guest/table/SearchAndFilterBar";
+import SearchAndFilterBar from "@/pages/adminContent/adminSection/guest/SearchAndFilterBar";
 import AddGuestDialog from "@/pages/adminContent/adminSection/guest/dialogs/AddGuestDialog";
 import DeleteGuestDialog from "@/pages/adminContent/adminSection/guest/dialogs/DeleteGuestDialog";
 import ImportGuestsDialog from "@/pages/adminContent/adminSection/guest/dialogs/ImportGuestsDialog";

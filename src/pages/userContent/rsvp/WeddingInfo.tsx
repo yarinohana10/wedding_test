@@ -1,39 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Clock, Calendar, MapPin } from "lucide-react";
-import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
+import { WeddingData } from "@/pages/Index";
 
-export const weddingDate = new Date();
-export const coupleName = "דנה & יוסי";
-export const targetDate = new Date(weddingDate);
-export const colors = [
-  "#F0B6BC",
-  "#E8D7C3",
-  "#D4AF7A",
-  "#F9F5F2",
-  "#1A1A2E",
-  "#FFD1DC",
-  "#FFEFD5",
-];
+interface WeddingInfoProps {
+  weddingData: WeddingData;
+}
 
-export const weddingData = {
-  coupleName,
-  date: `יום ${getDayOfWeek(targetDate)}, ${formatHebrewDate(targetDate)}`,
-  venue: "אולמי הגן הקסום",
-  address: "רחוב הפרחים 123, תל אביב",
-  time: "19:00",
-  targetDate,
-  coordinates: {
-    lat: 32.0853,
-    lng: 34.7818,
-  },
-  heroImages: [
-    "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
-    "https://images.unsplash.com/photo-1511285560929-80b456503681?ixlib=rb-4.0.3&auto=format&fit=crop&w=1769&q=80",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
-  ],
-};
-
-const WeddingInfo = () => {
+const WeddingInfo = ({ weddingData }: WeddingInfoProps) => {
   return (
     <div>
       <div className="flex items-center gap-3 items-start p-5 my-5 bg-gray-50 rounded-lg transition-transform hover:scale-[1.02]">

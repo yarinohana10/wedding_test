@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import Navbar from "@/pages/layout/Navbar";
-import Footer from "@/pages/layout/Footer";
+import Navbar from "@/pages/Navbar";
+import Footer from "@/pages/Footer";
 import HeroSection from "@/pages/userContent/landing/HeroSection";
 import Countdown from "@/pages/userContent/landing/Countdown";
 import Rsvp from "@/pages/userContent/rsvp/Rsvp";
@@ -9,7 +9,6 @@ import ReactConfetti from "react-confetti";
 import GoToGallery from "./userContent/GoToGallery";
 
 export const weddingDate = new Date();
-export const coupleName = "דנה & יוסי";
 export const targetDate = new Date(weddingDate);
 export const colors = [
   "#F0B6BC",
@@ -21,8 +20,22 @@ export const colors = [
   "#FFEFD5",
 ];
 
-export const weddingData = {
-  coupleName,
+export interface WeddingData {
+  date: string;
+  time: string;
+  venue: string;
+  address: string;
+  targetDate: Date;
+  coupleName: string;
+  heroImages: string[];
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export const weddingData: WeddingData = {
+  coupleName: "דנה & יוסי",
   date: `יום ${getDayOfWeek(targetDate)}, ${formatHebrewDate(targetDate)}`,
   venue: "אולמי הגן הקסום",
   address: "רחוב הפרחים 123, תל אביב",
@@ -41,7 +54,7 @@ export const weddingData = {
 
 const Index = () => {
   useEffect(() => {
-    document.title = `${coupleName} - הזמנה לחתונה`;
+    document.title = `${weddingData.coupleName} - הזמנה לחתונה`;
   }, []);
 
   return (
@@ -59,7 +72,7 @@ const Index = () => {
         heroImages={weddingData.heroImages}
       />
       <Countdown targetDate={weddingData.targetDate} />
-      <Rsvp />
+      <Rsvp weddingData={weddingData} />
       <GoToGallery />
       <Footer />
     </div>
