@@ -17,7 +17,7 @@ const GalleryManager: React.FC = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<PhotoCategory | null>(null);
-  const [photos, setPhotos] = useState<Record<PhotoCategory, Photo[]>>({
+  const [photos, setPhotos] = useState<Record<string, Photo[]>>({
     preCeremony: [],
     ceremony: [],
     reception: []
@@ -71,7 +71,7 @@ const GalleryManager: React.FC = () => {
       // Update local state
       setPhotos(prev => ({
         ...prev,
-        [category]: [...prev[category], newPhoto]
+        [category]: [...prev[category as keyof typeof prev], newPhoto]
       }));
       
       toast({
@@ -97,13 +97,13 @@ const GalleryManager: React.FC = () => {
   const handleToggleFeatured = async (imageId: string, featured: boolean) => {
     try {
       // Update in Supabase
-      const updatedPhoto = await togglePhotoFeatured(imageId, featured);
+      await togglePhotoFeatured(imageId, featured);
       
       // Update local state
       setPhotos(prev => {
         const newPhotos = { ...prev };
         for (const category in newPhotos) {
-          newPhotos[category as PhotoCategory] = newPhotos[category as PhotoCategory].map(photo => 
+          newPhotos[category] = newPhotos[category].map(photo => 
             photo.id === imageId ? { ...photo, featured } : photo
           );
         }
@@ -133,7 +133,7 @@ const GalleryManager: React.FC = () => {
       setPhotos(prev => {
         const newPhotos = { ...prev };
         for (const category in newPhotos) {
-          newPhotos[category as PhotoCategory] = newPhotos[category as PhotoCategory]
+          newPhotos[category] = newPhotos[category]
             .filter(photo => photo.id !== imageId);
         }
         return newPhotos;
@@ -157,8 +157,8 @@ const GalleryManager: React.FC = () => {
     if (!result.destination) return;
 
     const { source, destination } = result;
-    const sourceCategory = source.droppableId as PhotoCategory;
-    const destCategory = destination.droppableId as PhotoCategory;
+    const sourceCategory = source.droppableId;
+    const destCategory = destination.droppableId;
 
     if (sourceCategory === destCategory) {
       // Reordering within the same category - we don't actually need to do anything
@@ -176,7 +176,7 @@ const GalleryManager: React.FC = () => {
 
   const renderCategorySection = (
     title: string,
-    category: PhotoCategory
+    category: string
   ) => (
     <div className="border p-3 rounded-lg">
       <h4 className="font-medium mb-3 text-center">{title}</h4>
@@ -185,7 +185,7 @@ const GalleryManager: React.FC = () => {
           htmlFor={`${category}-upload`}
           className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-md flex items-center gap-2"
         >
-          {uploading === category ? (
+          {uploading === category as PhotoCategory ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Upload className="h-4 w-4" />
@@ -196,7 +196,7 @@ const GalleryManager: React.FC = () => {
           id={`${category}-upload`}
           type="file"
           accept="image/*"
-          onChange={(e) => handleGalleryImagesChange(e, category)}
+          onChange={(e) => handleGalleryImagesChange(e, category as PhotoCategory)}
           className="hidden"
           disabled={!!uploading}
         />

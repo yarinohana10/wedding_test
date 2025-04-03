@@ -156,3 +156,69 @@ export const updateHeroImages = async (
     return null;
   }
 };
+
+/**
+ * Uploads a hero image and adds it to the event settings
+ * @param file The file to upload
+ * @returns The URL of the uploaded image
+ */
+export const uploadHeroImage = async (file: File): Promise<string> => {
+  try {
+    // Create a unique filename
+    const fileName = `hero_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+    
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('wedding')
+      .upload(`hero/${fileName}`, file);
+    
+    if (error) throw error;
+    
+    // Get the public URL
+    const { data: publicUrlData } = supabase.storage
+      .from('wedding')
+      .getPublicUrl(`hero/${fileName}`);
+    
+    const imageUrl = publicUrlData.publicUrl;
+    
+    // Fetch current hero images
+    const currentSettings = await fetchEventSettings();
+    const currentImages = currentSettings?.hero_images || [];
+    
+    // Add new image to array
+    await updateHeroImages([...currentImages, imageUrl]);
+    
+    return imageUrl;
+  } catch (error) {
+    console.error("Error uploading hero image:", error);
+    throw error;
+  }
+};
+
+/**
+ * Removes a hero image from the event settings
+ * @param imageUrl The URL of the image to remove
+ * @returns The updated event settings
+ */
+export const removeHeroImage = async (imageUrl: string): Promise<EventSettings | null> => {
+  try {
+    // Fetch current hero images
+    const currentSettings = await fetchEventSettings();
+    
+    if (!currentSettings) {
+      throw new Error("No event settings found");
+    }
+    
+    // Remove the image from array
+    const updatedImages = currentSettings.hero_images.filter(img => img !== imageUrl);
+    
+    // Update the hero images
+    return await updateHeroImages(updatedImages);
+    
+    // Note: We're not actually deleting the file from storage
+    // This would be a good enhancement for the future
+  } catch (error) {
+    console.error("Error removing hero image:", error);
+    throw error;
+  }
+};

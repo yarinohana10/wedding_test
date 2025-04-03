@@ -9,7 +9,6 @@ import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
 import ReactConfetti from "react-confetti";
 import GoToGallery from "./userContent/GoToGallery";
 import { fetchEventSettings } from "@/services/eventSettingsService";
-import { type EventSettings } from "@/services/eventSettingsService";
 
 export const targetDate = new Date();
 export const colors = [
@@ -21,6 +20,21 @@ export const colors = [
   "#FFD1DC",
   "#FFEFD5",
 ];
+
+// Define the WeddingData interface
+export interface WeddingData {
+  date: string;
+  time: string;
+  venue: string;
+  address: string;
+  targetDate: Date;
+  coupleName: string;
+  heroImages: string[];
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
 
 // Default wedding data as fallback
 export const defaultWeddingData: WeddingData = {
@@ -40,20 +54,6 @@ export const defaultWeddingData: WeddingData = {
     "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
   ],
 };
-
-export interface WeddingData {
-  date: string;
-  time: string;
-  venue: string;
-  address: string;
-  targetDate: Date;
-  coupleName: string;
-  heroImages: string[];
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-}
 
 const Index = () => {
   const [weddingData, setWeddingData] = useState<WeddingData>(defaultWeddingData);
@@ -87,8 +87,6 @@ const Index = () => {
     };
 
     fetchData();
-    
-    document.title = `${weddingData.coupleName} - הזמנה לחתונה`;
   }, []);
 
   // Update title when weddingData changes
