@@ -14,6 +14,10 @@ export interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
+export interface DashboardNavProps {
+  className?: string;
+}
+
 const dashboardNavItems: NavItem[] = [
   {
     title: "ניהול מוזמנים",
