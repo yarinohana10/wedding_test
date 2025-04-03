@@ -43,10 +43,10 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route path="/dashboard"  element={<DashboardLayout />}>
             <Route index element={<DashboardGuests />} />
-            <Route path="guests" element={<Dashboard />} />
             <Route path="settings" element={<DashboardSettings />} />
+            <Route path="help" element={<NotFound />} />
           </Route>
 
           {/* Footer pages */}

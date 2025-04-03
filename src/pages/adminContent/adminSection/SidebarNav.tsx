@@ -22,7 +22,7 @@ const SidebarNav = () => {
   const links = [
     {
       title: "מוזמנים",
-      href: "/dashboard/guests",
+      href: "/dashboard",
       icon: <Users className="h-4 w-4 ml-2" />,
     },
     {
