@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/card";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
 import { fetchAllApprovedPhotos, fetchPhotosByCategory, type Photo, type PhotoCategory } from "@/services/photoService";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Gallery = () => {
   const [activeTab, setActiveTab] = useState<string>("all");
