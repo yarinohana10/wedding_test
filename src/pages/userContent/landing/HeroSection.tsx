@@ -1,9 +1,14 @@
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
 } from "@/components/ui/carousel";
+import { fetchEventSettings } from "@/services/eventSettingsService";
 
 interface HeroSectionProps {
   date: string;
@@ -12,12 +17,34 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
+  const [images, setImages] = useState<string[]>(heroImages);
+
+  useEffect(() => {
+    // Try to fetch hero images from Supabase
+    const getEventSettings = async () => {
+      try {
+        const settings = await fetchEventSettings();
+        if (settings && settings.hero_images && settings.hero_images.length > 0) {
+          setImages(settings.hero_images);
+        }
+      } catch (error) {
+        console.error("Error fetching hero images:", error);
+        // Fallback to props if there's an error
+      }
+    };
+
+    getEventSettings();
+  }, [heroImages]);
+
   const scrollToRsvp = () => {
     const rsvpElement = document.getElementById("rsvp");
     if (rsvpElement) {
       rsvpElement.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  // Use a placeholder if no images are available
+  const placeholderImage = "https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1480&q=80";
 
   return (
     <div className="min-h-[90vh] flex items-center justify-center relative overflow-hidden">
@@ -30,15 +57,30 @@ const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
           }}
         >
           <CarouselContent className="h-full">
-            {heroImages.map((image, index) => (
-              <CarouselItem key={index}  className="h-full">
+            {images.length > 0 ? (
+              images.map((image, index) => (
+                <CarouselItem key={index} className="h-full">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat h-full w-full transition-opacity duration-1000"
+                    style={{ backgroundImage: `url(${image})` }}
+                  />
+                </CarouselItem>
+              ))
+            ) : (
+              <CarouselItem className="h-full">
                 <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat h-full w-full transition-opacity duration-1000"
-                  style={{ backgroundImage: `url(https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1480&q=80)` }}
+                  style={{ backgroundImage: `url(${placeholderImage})` }}
                 />
               </CarouselItem>
-            ))}
+            )}
           </CarouselContent>
+          {images.length > 1 && (
+            <>
+              <CarouselPrevious className="z-10" />
+              <CarouselNext className="z-10" />
+            </>
+          )}
         </Carousel>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       </div>
