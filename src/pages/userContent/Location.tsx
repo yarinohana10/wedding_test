@@ -1,9 +1,8 @@
-
-import React, { useEffect, useState } from 'react';
-import Navbar from '@/pages/Navbar';
-import Footer from '@/pages/Footer';
-import { MapPin, Navigation, Car, Clock, Phone, Mail } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useEffect, useState } from "react";
+import Navbar from "@/pages/Navbar";
+import Footer from "@/pages/Footer";
+import { MapPin, Navigation, Car, Clock, Phone, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Location = () => {
   const venueDetails = {
@@ -13,45 +12,45 @@ const Location = () => {
     email: "info@magic-garden.co.il",
     coordinates: {
       lat: 32.0853,
-      lng: 34.7818
+      lng: 34.7818,
     },
     hours: "א'-ה': 10:00-22:00, ו': 10:00-15:00, שבת: סגור",
-    parking: "חניון ציבורי צמוד לאולם (חינם לאורחי האירוע)"
+    parking: "חניון ציבורי צמוד לאולם (חינם לאורחי האירוע)",
   };
-  
+
   const [googleMapsLoaded, setGoogleMapsLoaded] = useState(false);
-  
+
   useEffect(() => {
     // Check if Google Maps is already loaded
     if (window.google) {
       setGoogleMapsLoaded(true);
       return;
     }
-    
+
     // Load Google Maps API script dynamically
-    const googleMapsApiKey = 'REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
-    const script = document.createElement('script');
+    const googleMapsApiKey = "REPLACE_WITH_YOUR_GOOGLE_MAPS_API_KEY"; // Replace with your API key
+    const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initMap&language=he`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
-    
+
     window.initMap = () => {
       setGoogleMapsLoaded(true);
     };
-    
+
     return () => {
       document.head.removeChild(script);
       delete window.initMap;
     };
   }, []);
-  
+
   useEffect(() => {
     if (!googleMapsLoaded) return;
-    
-    const mapElement = document.getElementById('venue-map');
+
+    const mapElement = document.getElementById("venue-map");
     if (!mapElement) return;
-    
+
     const map = new google.maps.Map(mapElement, {
       center: venueDetails.coordinates,
       zoom: 15,
@@ -61,43 +60,43 @@ const Location = () => {
       streetViewControl: true,
       zoomControl: true,
     });
-    
+
     const marker = new google.maps.Marker({
       position: venueDetails.coordinates,
       map: map,
       title: venueDetails.name,
       animation: google.maps.Animation.DROP,
       icon: {
-        url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F0B6BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
-        ),
+        url:
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F0B6BC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>'
+          ),
         scaledSize: new google.maps.Size(40, 40),
         anchor: new google.maps.Point(20, 40),
-      }
+      },
     });
-    
+
     const infoWindow = new google.maps.InfoWindow({
       content: `
         <div class="text-right p-2" dir="rtl">
           <h3 class="font-bold text-lg">${venueDetails.name}</h3>
           <p>${venueDetails.address}</p>
         </div>
-      `
+      `,
     });
-    
-    marker.addListener('click', () => {
+
+    marker.addListener("click", () => {
       infoWindow.open(map, marker);
     });
-    
+
     // Open info window by default
     infoWindow.open(map, marker);
-    
   }, [googleMapsLoaded, venueDetails]);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
       <main className="flex-grow pt-24 pb-16 gradient-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -108,14 +107,18 @@ const Location = () => {
               </div>
               <p className="text-gray-600">כיצד להגיע לאירוע שלנו</p>
             </div>
-            
+
             {/* Map Section */}
             <div className="bg-white rounded-xl shadow-md overflow-hidden mb-10">
               <div id="venue-map" className="h-80 bg-gray-200 relative"></div>
               <div className="p-6">
-                <h2 className="text-2xl font-bold mb-2 text-right">{venueDetails.name}</h2>
-                <p className="text-gray-600 mb-4 text-right">{venueDetails.address}</p>
-                
+                <h2 className="text-2xl font-bold mb-2 text-right">
+                  {venueDetails.name}
+                </h2>
+                <p className="text-gray-600 mb-4 text-right">
+                  {venueDetails.address}
+                </p>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="text-right">
                     <h3 className="font-bold mb-2 flex items-center justify-end">
@@ -129,26 +132,30 @@ const Location = () => {
                       <span>{venueDetails.email}</span>
                       <Mail className="h-4 w-4 text-wedding-primary mr-2" />
                     </p>
-                    
+
                     <h3 className="font-bold mb-2 flex items-center justify-end">
                       <span>שעות פעילות</span>
                       <Clock className="h-4 w-4 text-wedding-primary mr-2" />
                     </h3>
-                    <p className="text-gray-600 mb-4 text-right">{venueDetails.hours}</p>
+                    <p className="text-gray-600 mb-4 text-right">
+                      {venueDetails.hours}
+                    </p>
                   </div>
-                  
+
                   <div className="text-right">
                     <h3 className="font-bold mb-2 flex items-center justify-end">
                       <span>חניה</span>
                     </h3>
-                    <p className="text-gray-600 mb-4 text-right">{venueDetails.parking}</p>
-                    
+                    <p className="text-gray-600 mb-4 text-right">
+                      {venueDetails.parking}
+                    </p>
+
                     <h3 className="font-bold mb-2 flex items-center justify-end">
                       <span>הוראות הגעה</span>
                     </h3>
                     <div className="flex flex-col gap-3 mt-3">
                       <Button className="flex items-center gap-2" asChild>
-                        <a 
+                        <a
                           href={`https://waze.com/ul?ll=${venueDetails.coordinates.lat},${venueDetails.coordinates.lng}&navigate=yes`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -157,9 +164,13 @@ const Location = () => {
                           <span>נווט באמצעות Waze</span>
                         </a>
                       </Button>
-                      
-                      <Button variant="outline" className="flex items-center gap-2" asChild>
-                        <a 
+
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2"
+                        asChild
+                      >
+                        <a
                           href={`https://www.google.com/maps/dir/?api=1&destination=${venueDetails.coordinates.lat},${venueDetails.coordinates.lng}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -176,7 +187,7 @@ const Location = () => {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

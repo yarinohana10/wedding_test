@@ -8,8 +8,7 @@ import { formatHebrewDate, getDayOfWeek } from "@/lib/date";
 import ReactConfetti from "react-confetti";
 import GoToGallery from "./userContent/GoToGallery";
 
-export const weddingDate = new Date();
-export const targetDate = new Date(weddingDate);
+export const targetDate = new Date();
 export const colors = [
   "#F0B6BC",
   "#E8D7C3",

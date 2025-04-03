@@ -1,25 +1,21 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem
-} from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
+  CarouselItem,
+} from "@/components/ui/carousel";
 
 interface HeroSectionProps {
-  coupleName: string;
   date: string;
-  heroImages?: string[];
+  coupleName: string;
+  heroImages: string[];
 }
 
 const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
-
   const scrollToRsvp = () => {
-    const rsvpElement = document.getElementById('rsvp');
+    const rsvpElement = document.getElementById("rsvp");
     if (rsvpElement) {
-      rsvpElement.scrollIntoView({ behavior: 'smooth' });
+      rsvpElement.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -54,9 +50,7 @@ const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
 
         <div className="w-24 h-1 bg-wedding-primary mx-auto my-6" />
 
-        <p className="text-xl md:text-2xl text-white mb-8">
-          {date}
-        </p>
+        <p className="text-xl md:text-2xl text-white mb-8">{date}</p>
 
         <Button
           onClick={scrollToRsvp}

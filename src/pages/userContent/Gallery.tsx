@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import Navbar from "@/pages/Navbar";
 import Footer from "@/pages/Footer";
-import { Images, Heart, ChevronDown, Upload, X } from "lucide-react";
+import { Images, Heart, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -10,14 +10,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
 
@@ -373,12 +371,14 @@ const Gallery = () => {
               key={image.id}
               className="aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 group"
             >
-              <div className="relative h-full w-full">
+              <div
+                onClick={() => openPreview(image.src)}
+                className="relative h-full w-full"
+              >
                 <img
                   src={image.src}
                   alt={image.alt}
                   className="h-full w-full object-cover cursor-pointer group-hover:scale-105 transition-transform duration-500"
-                  onClick={() => openPreview(image.src)}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                   <div

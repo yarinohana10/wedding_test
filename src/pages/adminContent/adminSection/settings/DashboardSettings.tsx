@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Card,
@@ -17,6 +16,7 @@ import EventDetailsForm from "@/pages/adminContent/adminSection/settings/EventDe
 import HeroImagesSection from "@/pages/adminContent/adminSection/settings/HeroImagesSection";
 import GalleryManager from "@/pages/adminContent/adminSection/settings/GalleryManager";
 import MessageTemplates from "@/pages/adminContent/adminSection/settings/MessageTemplates";
+import { weddingData } from "@/pages/Index";
 
 interface GalleryImage {
   id: number;
@@ -30,11 +30,7 @@ const DashboardSettings = () => {
   const { toast } = useToast();
 
   const [eventDetails, setEventDetails] = useState({
-    coupleName: "דנה & יוסי",
-    date: "2024-08-12",
-    time: "19:00",
-    venue: "אולמי הגן הקסום",
-    address: "רחוב הפרחים 123, תל אביב",
+    ...weddingData,
   });
 
   const [heroImages, setHeroImages] = useState<File[]>([]);
@@ -292,7 +288,7 @@ const DashboardSettings = () => {
             </TabsList>
 
             <TabsContent value="event-details" className="space-y-4">
-              <EventDetailsForm 
+              <EventDetailsForm
                 eventDetails={eventDetails}
                 handleEventDetailsChange={handleEventDetailsChange}
                 searchVenue={searchVenue}
@@ -303,8 +299,8 @@ const DashboardSettings = () => {
                 selectVenue={selectVenue}
                 handleSaveEventDetails={handleSaveEventDetails}
               />
-              
-              <HeroImagesSection 
+
+              <HeroImagesSection
                 previewHeroImages={previewHeroImages}
                 handleHeroImagesChange={handleHeroImagesChange}
                 handleSaveHeroImages={handleSaveHeroImages}
@@ -312,7 +308,7 @@ const DashboardSettings = () => {
             </TabsContent>
 
             <TabsContent value="gallery" className="space-y-4">
-              <GalleryManager 
+              <GalleryManager
                 existingImages={existingImages}
                 handleGalleryImagesChange={handleGalleryImagesChange}
                 toggleImageFeatured={toggleImageFeatured}
@@ -323,7 +319,7 @@ const DashboardSettings = () => {
             </TabsContent>
 
             <TabsContent value="messages" className="space-y-4">
-              <MessageTemplates 
+              <MessageTemplates
                 messages={messages}
                 setMessages={setMessages}
                 handleSaveMessage={handleSaveMessage}
