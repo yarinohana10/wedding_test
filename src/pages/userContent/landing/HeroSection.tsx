@@ -31,10 +31,10 @@ const HeroSection = ({ coupleName, date, heroImages }: HeroSectionProps) => {
         >
           <CarouselContent className="h-full">
             {heroImages.map((image, index) => (
-              <CarouselItem key={index} className="h-full">
+              <CarouselItem key={index}  className="h-full">
                 <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat h-full w-full transition-opacity duration-1000"
-                  style={{ backgroundImage: `url(${image})` }}
+                  style={{ backgroundImage: `url(https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1480&q=80)` }}
                 />
               </CarouselItem>
             ))}

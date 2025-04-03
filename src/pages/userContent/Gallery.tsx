@@ -55,7 +55,7 @@ const Gallery = () => {
       id: 1,
       src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
       alt: "הכנות לחתונה 1",
-      featured: true,
+      featured: false,
       likes: 5,
     },
     {
@@ -84,7 +84,7 @@ const Gallery = () => {
       src: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1480&q=80",
       alt: "הכנות לחתונה 5",
       featured: true,
-      likes: 4,
+      likes: 7,
     },
     {
       id: 6,
@@ -97,7 +97,7 @@ const Gallery = () => {
       id: 7,
       src: "https://images.unsplash.com/photo-1512438248247-f0f2a5a8b7f0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1974&q=80",
       alt: "הכנות לחתונה 7",
-      featured: false,
+      featured: true,
       likes: 0,
     },
   ]);
@@ -107,14 +107,14 @@ const Gallery = () => {
       id: 8,
       src: "https://images.unsplash.com/photo-1511285560929-80b456503681?ixlib=rb-4.0.3&auto=format&fit=crop&w=1769&q=80",
       alt: "חופה 1",
-      featured: true,
+      featured: false,
       likes: 9,
     },
     {
       id: 9,
       src: "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80",
       alt: "חופה 2",
-      featured: true,
+      featured: false,
       likes: 6,
     },
     {
@@ -145,7 +145,7 @@ const Gallery = () => {
       id: 13,
       src: "https://images.unsplash.com/photo-1470290378674-419847e9cf3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1769&q=80",
       alt: "ריקודים 1",
-      featured: true,
+      featured: false,
       likes: 7,
     },
     {
