@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Images, Upload, X } from "lucide-react";
-import { updateHeroImages, uploadHeroImage, removeHeroImage } from "@/services/eventSettingsService";
+import { uploadHeroImage, removeHeroImage } from "@/services/eventSettingsService";
 import { useToast } from "@/hooks/use-toast";
 
 interface HeroImagesSectionProps {

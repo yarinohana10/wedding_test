@@ -1,15 +1,14 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { v4 as uuidv4 } from "uuid";
 
-// Define the photo categories as a union type
-export type PhotoCategory = "preCeremony" | "ceremony" | "reception" | "venue";
+export type PhotoCategory = "hero" | "gallery" | "couple" | "venue" | "other";
 
-// Define the photo interface
 export interface Photo {
   id: string;
   path: string;
   category: PhotoCategory;
-  description?: string;
+  description: string;
   featured: boolean;
   approved: boolean;
   rating: number;
@@ -18,18 +17,20 @@ export interface Photo {
 }
 
 /**
- * Fetches all photos from Supabase
+ * Fetches all photos from the database
+ * @returns Array of photos
  */
 export const fetchPhotos = async (): Promise<Photo[]> => {
   try {
-    const { data, error } = await supabase
-      .from("photos")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.from("photos").select("*");
 
     if (error) throw error;
 
-    return data as Photo[];
+    // Convert the database data to our Photo type
+    return (data || []).map(photo => ({
+      ...photo,
+      category: photo.category as PhotoCategory
+    }));
   } catch (error) {
     console.error("Error fetching photos:", error);
     return [];
@@ -39,6 +40,7 @@ export const fetchPhotos = async (): Promise<Photo[]> => {
 /**
  * Fetches photos by category
  * @param category The category to filter by
+ * @returns Array of photos in the specified category
  */
 export const fetchPhotosByCategory = async (
   category: PhotoCategory
@@ -47,170 +49,151 @@ export const fetchPhotosByCategory = async (
     const { data, error } = await supabase
       .from("photos")
       .select("*")
-      .eq("category", category)
-      .order("created_at", { ascending: false });
+      .eq("category", category);
 
     if (error) throw error;
 
-    return data as Photo[];
+    // Convert the database data to our Photo type
+    return (data || []).map(photo => ({
+      ...photo,
+      category: photo.category as PhotoCategory
+    }));
   } catch (error) {
-    console.error(`Error fetching ${category} photos:`, error);
+    console.error(`Error fetching photos with category ${category}:`, error);
     return [];
   }
 };
 
-/**
- * Fetches featured photos
- */
-export const fetchFeaturedPhotos = async (): Promise<Photo[]> => {
-  try {
-    const { data, error } = await supabase
-      .from("photos")
-      .select("*")
-      .eq("featured", true)
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    return data as Photo[];
-  } catch (error) {
-    console.error("Error fetching featured photos:", error);
-    return [];
-  }
-};
+export interface NewPhoto extends Omit<Photo, "id" | "created_at" | "updated_at"> {
+  file: File;
+}
 
 /**
- * Uploads a photo to Supabase Storage and adds it to the photos table
- * @param file The file to upload
- * @param category The photo category
+ * Uploads a single photo to Supabase Storage and adds an entry to the photos table
+ * @param newPhoto The photo object containing metadata and file
+ * @returns The newly created photo object
  */
-export const uploadPhoto = async (
-  file: File,
-  category: PhotoCategory
-): Promise<Photo> => {
+export const uploadPhoto = async (newPhoto: NewPhoto): Promise<Photo | null> => {
   try {
-    // Create a unique filename
-    const fileName = `${category}_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-    
-    // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from('wedding')
-      .upload(`photos/${fileName}`, file);
-    
-    if (error) throw error;
-    
-    // Get the public URL
+    const { file, ...photoMetadata } = newPhoto;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${uuidv4()}.${fileExt}`;
+    const filePath = `${newPhoto.category}/${fileName}`;
+
+    // 1. Upload the file to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("wedding_photos")
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // 2. Get the public URL for the uploaded file
     const { data: publicUrlData } = supabase.storage
-      .from('wedding')
-      .getPublicUrl(`photos/${fileName}`);
-    
-    const photoUrl = publicUrlData.publicUrl;
-    
-    // Create a record in the photos table
-    const photoData: Omit<Photo, "id" | "created_at" | "updated_at"> = {
-      path: photoUrl,
-      category,
-      featured: false,
-      approved: true,
-      rating: 0,
+      .from("wedding_photos")
+      .getPublicUrl(uploadData.path);
+
+    const publicUrl = publicUrlData.publicUrl;
+
+    // 3. Create a database entry for the photo
+    const photoData = {
+      ...photoMetadata,
+      path: publicUrl,
     };
-    
+
     const { data: insertData, error: insertError } = await supabase
       .from("photos")
       .insert([photoData])
       .select()
       .single();
-    
+
     if (insertError) throw insertError;
-    
-    return insertData as Photo;
+
+    return {
+      ...insertData,
+      category: insertData.category as PhotoCategory
+    };
   } catch (error) {
     console.error("Error uploading photo:", error);
-    throw error;
+    return null;
   }
 };
 
 /**
- * Deletes a photo from Supabase
- * @param photoId The ID of the photo to delete
+ * Updates a photo's metadata
+ * @param id The photo ID
+ * @param updates The updates to apply
+ * @returns The updated photo
  */
-export const deletePhoto = async (photoId: string): Promise<void> => {
+export const updatePhoto = async (
+  id: string,
+  updates: Partial<Omit<Photo, "id" | "created_at" | "updated_at" | "path">>
+): Promise<Photo | null> => {
   try {
-    // First get the photo URL
-    const { data, error: fetchError } = await supabase
+    const { data, error } = await supabase
+      .from("photos")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      ...data,
+      category: data.category as PhotoCategory
+    };
+  } catch (error) {
+    console.error(`Error updating photo ${id}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Deletes a photo from both storage and the database
+ * @param id The ID of the photo to delete
+ * @param path The storage path of the photo
+ * @returns Whether the deletion was successful
+ */
+export const deletePhoto = async (id: string): Promise<boolean> => {
+  try {
+    // First get the photo to extract the path
+    const { data: photo, error: fetchError } = await supabase
       .from("photos")
       .select("path")
-      .eq("id", photoId)
+      .eq("id", id)
       .single();
-    
+
     if (fetchError) throw fetchError;
-    
-    // Delete from photos table
-    const { error: deleteError } = await supabase
-      .from("photos")
-      .delete()
-      .eq("id", photoId);
-    
-    if (deleteError) throw deleteError;
-    
-    // Extract the file path from the URL to delete from storage
-    // This assumes the URL is in the format: https://xxx.supabase.co/storage/v1/object/public/wedding/photos/filename
-    // Skipping this step for now as it's complex to parse the URL correctly
-    // To implement in the future
-  } catch (error) {
-    console.error("Error deleting photo:", error);
-    throw error;
-  }
-};
 
-/**
- * Updates a photo's rating
- * @param photoId The ID of the photo
- * @param rating The new rating value
- */
-export const ratePhoto = async (
-  photoId: string,
-  rating: number
-): Promise<Photo> => {
-  try {
-    const { data, error } = await supabase
-      .from("photos")
-      .update({ rating })
-      .eq("id", photoId)
-      .select()
-      .single();
-    
-    if (error) throw error;
-    
-    return data as Photo;
-  } catch (error) {
-    console.error("Error updating photo rating:", error);
-    throw error;
-  }
-};
+    // The path in the database is the full URL, we need to extract the storage path
+    // Example: https://supabase-url.storage.googleapis.com/wedding_photos/abc.jpg
+    // We need: wedding_photos/abc.jpg
+    let storagePath = "";
+    if (photo?.path) {
+      const url = new URL(photo.path);
+      storagePath = url.pathname.split("/").slice(2).join("/");
+    }
 
-/**
- * Toggles a photo's featured status
- * @param photoId The ID of the photo
- * @param featured The new featured status
- */
-export const togglePhotoFeatured = async (
-  photoId: string,
-  featured: boolean
-): Promise<Photo> => {
-  try {
-    const { data, error } = await supabase
-      .from("photos")
-      .update({ featured })
-      .eq("id", photoId)
-      .select()
-      .single();
-    
+    // Delete from storage if we have a path
+    if (storagePath) {
+      const { error: storageError } = await supabase.storage
+        .from("wedding_photos")
+        .remove([storagePath]);
+
+      if (storageError) {
+        console.error("Failed to delete file from storage:", storageError);
+        // Continue to delete from DB even if storage delete fails
+      }
+    }
+
+    // Delete from database
+    const { error } = await supabase.from("photos").delete().eq("id", id);
+
     if (error) throw error;
-    
-    return data as Photo;
+
+    return true;
   } catch (error) {
-    console.error("Error updating photo featured status:", error);
-    throw error;
+    console.error(`Error deleting photo ${id}:`, error);
+    return false;
   }
 };

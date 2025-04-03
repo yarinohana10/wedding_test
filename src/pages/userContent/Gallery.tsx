@@ -25,7 +25,7 @@ import {
   uploadPhoto, 
   ratePhoto,
   type Photo, 
-  type PhotoCategory 
+  type PhotoCategory
 } from "@/services/photoService";
 
 const Gallery = () => {
@@ -33,7 +33,7 @@ const Gallery = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // State to track photos
-  const [photos, setPhotos] = useState<Record<string, Photo[]>>({
+  const [photos, setPhotos] = useState<Record<PhotoCategory, Photo[]>>({
     preCeremony: [],
     ceremony: [],
     reception: []
@@ -105,7 +105,7 @@ const Gallery = () => {
   };
 
   // Toggle like for an image
-  const toggleLike = async (section: string, photoId: string) => {
+  const toggleLike = async (section: PhotoCategory, photoId: string) => {
     try {
       const isLiked = !!userLikes[photoId];
       
@@ -249,7 +249,7 @@ const Gallery = () => {
   // Render expanded gallery grid with fade effect
   const renderGalleryGrid = (
     images: Photo[],
-    section: string
+    section: PhotoCategory
   ) => {
     const visibleImages = images.slice(0, 8); // Show only first 8 images
     const hasMoreImages = images.length > 8;
@@ -296,7 +296,7 @@ const Gallery = () => {
         </div>
 
         {hasMoreImages &&
-          !expandedSections[section as keyof typeof expandedSections] && (
+          !expandedSections[section] && (
             <div className="relative mt-4">
               <div
                 className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent to-white pointer-events-none"
@@ -304,7 +304,7 @@ const Gallery = () => {
               />
               <div className="text-center pt-6">
                 <Button
-                  onClick={() => toggleSection(section as keyof typeof expandedSections)}
+                  onClick={() => toggleSection(section)}
                   variant="outline"
                   className="bg-white shadow hover:shadow-md rounded-full px-6 py-2 mt-2"
                 >
@@ -314,7 +314,7 @@ const Gallery = () => {
             </div>
           )}
 
-        {expandedSections[section as keyof typeof expandedSections] && (
+        {expandedSections[section] && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
             {images.slice(8).map((image) => (
               <div
@@ -353,10 +353,10 @@ const Gallery = () => {
           </div>
         )}
 
-        {expandedSections[section as keyof typeof expandedSections] && (
+        {expandedSections[section] && (
           <div className="text-center mt-4">
             <Button
-              onClick={() => toggleSection(section as keyof typeof expandedSections)}
+              onClick={() => toggleSection(section)}
               variant="outline"
               className="bg-white shadow hover:shadow-md rounded-full px-6 py-2"
             >
@@ -373,7 +373,7 @@ const Gallery = () => {
     title: string,
     subtitle: string,
     sectionImages: Photo[],
-    sectionKey: string
+    sectionKey: PhotoCategory
   ) => {
     // If no images, don't show section
     if (!sectionImages.length) {
@@ -391,7 +391,7 @@ const Gallery = () => {
 
         <div className="mt-6 flex justify-center gap-4">
           <Button
-            onClick={() => setUploadSection(sectionKey as PhotoCategory)}
+            onClick={() => setUploadSection(sectionKey)}
             className="bg-wedding-primary text-white rounded-full px-6 py-2 flex items-center gap-2 hover:bg-wedding-accent transition-colors"
           >
             <Upload className="h-4 w-4 ml-2" />
