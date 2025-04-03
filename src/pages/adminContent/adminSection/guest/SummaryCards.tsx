@@ -21,7 +21,7 @@ const SummaryCards: React.FC<SummaryProps> = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
       <Card
-        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
+        className="p-4 hover:scale-[1.02] bg-wedding-accent/20 hover:bg-wedding-primary/20 border-wedding-primary/20 cursor-pointer"
         onClick={() => filterByStatus("אישר הגעה")}
       >
         <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
@@ -37,7 +37,7 @@ const SummaryCards: React.FC<SummaryProps> = ({
       </Card>
 
       <Card
-        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
+        className="p-4 hover:scale-[1.02] bg-wedding-accent/20 hover:bg-wedding-primary/20 border-wedding-primary/20 cursor-pointer"
         onClick={() => filterByStatus("לא מגיע")}
       >
         <h3 className="text-lg font-medium text-right">לא מגיעים</h3>
@@ -53,7 +53,7 @@ const SummaryCards: React.FC<SummaryProps> = ({
       </Card>
 
       <Card
-        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
+        className="p-4 hover:scale-[1.02] bg-wedding-accent/20 hover:bg-wedding-primary/20 border-wedding-primary/20 cursor-pointer"
         onClick={() => filterByStatus("טרם אישר")}
       >
         <h3 className="text-lg font-medium text-right">טרם אישרו</h3>
@@ -80,7 +80,7 @@ const SummaryCards: React.FC<SummaryProps> = ({
       </Card>
 
       <Card
-        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
+        className="p-4 hover:scale-[1.02] bg-wedding-accent/20 hover:bg-wedding-primary/20 border-wedding-primary/20 cursor-pointer"
         onClick={() => filterByStatus("all")}
       >
         <h3 className="text-lg font-medium text-right">סה"כ הזמנות</h3>

@@ -66,7 +66,23 @@ const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
         </div>
       </div>
 
-      <div className="flex gap-2 flex-wrap md:flex-nowrap">
+      <div className="flex justify-between gap-2 ">
+        <div className="flex gap-2 flex-wrap md:flex-nowrap">
+          <Button
+            className="gap-2 bg-wedding-primary hover:bg-wedding-accent text-white"
+            onClick={() => setIsImportDialogOpen(true)}
+          >
+            <FileUp className="h-4 w-4 ml-2" />
+            <span>הוספת מוזמנים מאקסל</span>
+          </Button>
+          <Button
+            className="gap-2 bg-wedding-primary hover:bg-wedding-accent text-white"
+            onClick={() => setIsAddDialogOpen(true)}
+          >
+            <Plus className="h-4 w-4 ml-2" />
+            <span>הוספת מוזמן</span>
+          </Button>
+        </div>
         <Button
           variant="outline"
           className="gap-2 border-wedding-primary/50 text-wedding-dark"
@@ -84,21 +100,6 @@ const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
               <span>ייצוא לאקסל</span>
             </>
           )}
-        </Button>
-        <Button
-          variant="outline"
-          className="gap-2 border-wedding-primary/50 text-wedding-dark"
-          onClick={() => setIsImportDialogOpen(true)}
-        >
-          <FileUp className="h-4 w-4 ml-2" />
-          <span>ייבוא מאקסל</span>
-        </Button>
-        <Button
-          className="gap-2 bg-wedding-primary hover:bg-wedding-accent text-white"
-          onClick={() => setIsAddDialogOpen(true)}
-        >
-          <Plus className="h-4 w-4 ml-2" />
-          <span>הוספת מוזמן</span>
         </Button>
       </div>
     </div>

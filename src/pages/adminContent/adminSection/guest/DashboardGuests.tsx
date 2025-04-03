@@ -588,15 +588,11 @@ const DashboardGuests = () => {
         <h1 className="text-3xl font-bold tracking-tight">ניהול מוזמנים</h1>
         <p className="text-muted-foreground">רשימת המוזמנים לאירוע</p>
       </div>
-
-      {/* Summary Cards */}
       <SummaryCards 
         summary={summary} 
         filterByStatus={filterByStatus}
         guestsLength={guests.length}
       />
-
-      {/* Search and filter bar */}
       <SearchAndFilterBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -607,14 +603,13 @@ const DashboardGuests = () => {
         setIsImportDialogOpen={setIsImportDialogOpen}
         setIsAddDialogOpen={setIsAddDialogOpen}
       />
-
-      {/* Desktop table view */}
       <GuestsTable
         filteredGuests={filteredGuests}
         handleUpdateField={handleUpdateField}
         handleDelete={handleDelete}
       />
 
+      
       <DeleteGuestDialog
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}
@@ -622,7 +617,6 @@ const DashboardGuests = () => {
         confirmDelete={confirmDelete}
         isLoading={isLoading}
       />
-
       <AddGuestDialog
         isOpen={isAddDialogOpen}
         setIsOpen={setIsAddDialogOpen}
@@ -631,7 +625,6 @@ const DashboardGuests = () => {
         handleAddGuest={handleAddGuest}
         isLoading={isLoading}
       />
-
       <ImportGuestsDialog
         isOpen={isImportDialogOpen}
         setIsOpen={setIsImportDialogOpen}
