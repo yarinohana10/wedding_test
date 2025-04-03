@@ -38,7 +38,7 @@ const SidebarNav = () => {
   ];
 
   return (
-    <div className={"flex flex-col h-full justify-between overflow-auto"}>
+    <div className={"flex flex-col py-4 h-full justify-between overflow-auto"}>
       <nav className={"flex flex-col gap-1"}>
         {links.map((link) => (
           <NavLink

@@ -24,7 +24,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
           "bg-wedding-accent/50  font-medium hover:bg-wedding-accent/20"
       )}
     >
-      <a href={href} className="flex items-center">
+      <a href={href} className="flex w-full items-center">
         {icon}
         {title}
       </a>

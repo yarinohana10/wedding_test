@@ -62,7 +62,7 @@ const SheetContent = React.forwardRef<
       className={cn(sheetVariants({ side }), className)}
       {...props}
     >
-      <SheetPrimitive.Close className="w-full flex justify-end pb-4">
+      <SheetPrimitive.Close className="w-full flex justify-end">
         <X className="h-5 w-5" />
       </SheetPrimitive.Close>
       {children}
