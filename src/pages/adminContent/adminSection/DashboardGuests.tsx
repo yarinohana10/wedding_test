@@ -1,50 +1,18 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Edit,
-  Trash2,
-  Plus,
-  Search,
-  Download,
-  Filter,
-  UserMinus,
-  Loader2,
-  X,
-  CheckCircle2,
-  FileUp,
-  FilePlus,
-  Save,
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { Loader2, X } from "lucide-react";
 import * as XLSX from "xlsx";
+import { supabase } from "@/integrations/supabase/client";
+
+import EditableCell from "@/components/guests/EditableCell";
+import GuestCard from "@/components/guests/GuestCard";
+import SummaryCards from "@/components/guests/SummaryCards";
+import GuestsTable from "@/components/guests/GuestsTable";
+import SearchAndFilterBar from "@/components/guests/SearchAndFilterBar";
+import AddGuestDialog from "@/components/guests/dialogs/AddGuestDialog";
+import DeleteGuestDialog from "@/components/guests/dialogs/DeleteGuestDialog";
+import ImportGuestsDialog from "@/components/guests/dialogs/ImportGuestsDialog";
 
 interface Guest {
   id: string;
@@ -56,105 +24,6 @@ interface Guest {
   created_at?: string | null;
   updated_at?: string | null;
 }
-
-// Component for inline editing
-interface EditableCellProps {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  onSave: () => void;
-  type: "text" | "number" | "select";
-  options?: { value: string; label: string }[];
-  className?: string;
-}
-
-const EditableCell: React.FC<EditableCellProps> = ({
-  value,
-  onChange,
-  onSave,
-  type,
-  options = [],
-  className = "",
-}) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isEditing]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      setIsEditing(false);
-      onSave();
-    } else if (e.key === "Escape") {
-      setIsEditing(false);
-    }
-  };
-
-  const handleBlur = () => {
-    setIsEditing(false);
-    onSave();
-  };
-
-  if (isEditing) {
-    if (type === "select") {
-      return (
-        <Select
-          value={String(value)}
-          onValueChange={(val) => {
-            onChange(val);
-            setIsEditing(false);
-            onSave();
-          }}
-          onOpenChange={(open) => {
-            if (!open) {
-              setIsEditing(false);
-              onSave();
-            }
-          }}
-        >
-          <SelectTrigger className="h-8 w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
-    }
-
-    return (
-      <Input
-        ref={inputRef}
-        type={type}
-        value={value}
-        onChange={(e) =>
-          onChange(type === "number" ? Number(e.target.value) : e.target.value)
-        }
-        onKeyDown={handleKeyDown}
-        onBlur={handleBlur}
-        className={`h-8 min-w-[80px] text-right ${className}`}
-        min={type === "number" ? 1 : undefined}
-      />
-    );
-  }
-
-  return (
-    <div
-      onClick={() => setIsEditing(true)}
-      className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors flex items-center"
-    >
-      <span className="flex-1">{value}</span>
-      <Edit className="h-3.5 w-3.5 text-gray-400 opacity-0 group-hover:opacity-100 mr-1" />
-    </div>
-  );
-};
 
 const DashboardGuests = () => {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -177,7 +46,7 @@ const DashboardGuests = () => {
     phone: "",
     guests: 1,
     status: "טרם אישר",
-    food: "רגיל", // Changed default to "רגיל" as requested
+    food: "רגיל",
   });
 
   // Summary stats
@@ -401,7 +270,7 @@ const DashboardGuests = () => {
         phone: "",
         guests: 1,
         status: "טרם אישר",
-        food: "רגיל", // Changed default to "רגיל"
+        food: "רגיל",
       });
     }
   };
@@ -574,7 +443,7 @@ const DashboardGuests = () => {
               phone: phone.toString(),
               guests: 1,
               status: "טרם אישר",
-              food: "רגיל", // Changed default to "רגיל"
+              food: "רגיל",
             });
           }
 
@@ -682,103 +551,6 @@ const DashboardGuests = () => {
     setFilterStatus(status);
   };
 
-  // Mobile card view for guest
-  const renderGuestCard = (guest: Guest) => {
-    const statusOptions = [
-      { value: "אישר הגעה", label: "אישר הגעה" },
-      { value: "טרם אישר", label: "טרם אישר" },
-      { value: "לא מגיע", label: "לא מגיע" },
-    ];
-
-    const foodOptions = [
-      { value: "רגיל", label: "רגיל" },
-      { value: "צמחוני", label: "צמחוני" },
-      { value: "טבעוני", label: "טבעוני" },
-      { value: "ללא גלוטן", label: "ללא גלוטן" },
-      { value: "-", label: "לא רלוונטי" },
-    ];
-
-    return (
-      <Card className="p-4 mb-4" key={guest.id}>
-        <div className="flex justify-between items-start mb-3">
-          <div className="w-full">
-            <div className="group mb-2">
-              <EditableCell
-                value={guest.name}
-                onChange={(value) => handleUpdateField(guest, "name", value)}
-                onSave={() => {}}
-                type="text"
-                className="text-lg font-medium"
-              />
-            </div>
-            <div className="group">
-              <EditableCell
-                value={guest.phone}
-                onChange={(value) => handleUpdateField(guest, "phone", value)}
-                onSave={() => {}}
-                type="text"
-                className="text-sm text-gray-500"
-              />
-            </div>
-          </div>
-          <span
-            className={`px-2 py-1 rounded-full text-xs ${getStatusColorClass(
-              guest.status
-            )}`}
-          >
-            {guest.status}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-          <div className="group">
-            <span className="text-gray-500 block mb-1">כמות אורחים:</span>
-            <EditableCell
-              value={guest.guests}
-              onChange={(value) => handleUpdateField(guest, "guests", value)}
-              onSave={() => {}}
-              type="number"
-            />
-          </div>
-          <div className="group">
-            <span className="text-gray-500 block mb-1">העדפת אוכל:</span>
-            <EditableCell
-              value={guest.food}
-              onChange={(value) => handleUpdateField(guest, "food", value)}
-              onSave={() => {}}
-              type="select"
-              options={foodOptions}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-between mt-2 gap-2">
-          <div className="group">
-            <span className="text-gray-500 block mb-1">סטטוס:</span>
-            <EditableCell
-              value={guest.status}
-              onChange={(value) => handleUpdateField(guest, "status", value)}
-              onSave={() => {}}
-              type="select"
-              options={statusOptions}
-            />
-          </div>
-          <div className="flex items-end">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive"
-              onClick={() => handleDelete(guest)}
-            >
-              <Trash2 className="h-4 w-4 ml-1" />
-              <span>מחק</span>
-            </Button>
-          </div>
-        </div>
-      </Card>
-    );
-  };
-
   if (isLoading && guests.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
@@ -818,271 +590,43 @@ const DashboardGuests = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <Card 
-          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
-          onClick={() => filterByStatus("אישר הגעה")}
-        >
-          <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-green-800" />
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold">{summary.totalGuests}</p>
-              <p className="text-sm text-gray-500">סה"כ אורחים</p>
-            </div>
-          </div>
-        </Card>
+      <SummaryCards 
+        summary={summary} 
+        filterByStatus={filterByStatus}
+        guestsLength={guests.length}
+      />
 
-        <Card 
-          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
-          onClick={() => filterByStatus("לא מגיע")}
-        >
-          <h3 className="text-lg font-medium text-right">לא מגיעים</h3>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-              <UserMinus className="h-6 w-6 text-red-800" />
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold">{summary.notAttending}</p>
-              <p className="text-sm text-gray-500">אנשים</p>
-            </div>
-          </div>
-        </Card>
+      {/* Search and filter bar */}
+      <SearchAndFilterBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        exportToExcel={exportToExcel}
+        isExporting={isExporting}
+        setIsImportDialogOpen={setIsImportDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+      />
 
-        <Card 
-          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
-          onClick={() => filterByStatus("טרם אישר")}
-        >
-          <h3 className="text-lg font-medium text-right">טרם אישרו</h3>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
-              <span className="text-amber-800 text-xl font-bold">
-                {summary.pending}
-              </span>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold">
-                {Math.round(
-                  (summary.pending /
-                    (summary.attending +
-                      summary.notAttending +
-                      summary.pending)) *
-                    100 || 0
-                )}
-                %
-              </p>
-              <p className="text-sm text-gray-500">מכלל ההזמנות</p>
-            </div>
-          </div>
-        </Card>
+      {/* Desktop table view */}
+      <GuestsTable
+        filteredGuests={filteredGuests}
+        handleUpdateField={handleUpdateField}
+        handleDelete={handleDelete}
+      />
 
-        <Card 
-          className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
-          onClick={() => filterByStatus("all")}
-        >
-          <h3 className="text-lg font-medium text-right">סה"כ הזמנות</h3>
-          <div className="mt-2 flex items-center justify-between">
-            <div className="h-12 w-12 rounded-full bg-wedding-primary/20 flex items-center justify-center">
-              <span className="text-wedding-primary text-xl font-bold">
-                {guests.length}
-              </span>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold">
-                {guests.reduce((acc, guest) => acc + guest.guests, 0)}
-              </p>
-              <p className="text-sm text-gray-500">סה"כ אנשים</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
-        <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-          <div className="relative flex-grow">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="חיפוש לפי שם או טלפון..."
-              className="pr-3 pl-10 text-right"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="flex-shrink-0">
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <div className="flex items-center">
-                  <Filter className="h-4 w-4 ml-2" />
-                  <SelectValue placeholder="סנן לפי סטטוס" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">הכל</SelectItem>
-                <SelectItem value="אישר הגעה">אישר הגעה</SelectItem>
-                <SelectItem value="טרם אישר">טרם אישר</SelectItem>
-                <SelectItem value="לא מגיע">לא מגיע</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="flex gap-2 flex-wrap md:flex-nowrap">
-          <Button
-            variant="outline"
-            className="gap-2 border-wedding-primary/50 text-wedding-dark"
-            onClick={exportToExcel}
-            disabled={isExporting}
-          >
-            {isExporting ? (
-              <>
-                <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                <span>מייצא...</span>
-              </>
-            ) : (
-              <>
-                <Download className="h-4 w-4 ml-2" />
-                <span>ייצוא לאקסל</span>
-              </>
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            className="gap-2 border-wedding-primary/50 text-wedding-dark"
-            onClick={() => setIsImportDialogOpen(true)}
-          >
-            <FileUp className="h-4 w-4 ml-2" />
-            <span>ייבוא מאקסל</span>
-          </Button>
-          <Button
-            className="gap-2 bg-wedding-primary hover:bg-wedding-accent text-white"
-            onClick={() => setIsAddDialogOpen(true)}
-          >
-            <Plus className="h-4 w-4 ml-2" />
-            <span>הוספת מוזמן</span>
-          </Button>
-        </div>
-      </div>
-
-      <div className="md:hidden rounded-md border border-wedding-primary/20 bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right font-bold">שם מלא</TableHead>
-              <TableHead className="text-right font-bold">מספר טלפון</TableHead>
-              <TableHead className="text-right font-bold">
-                כמות אורחים
-              </TableHead>
-              <TableHead className="text-right font-bold">סטטוס</TableHead>
-              <TableHead className="text-right font-bold">העדפת אוכל</TableHead>
-              <TableHead className="text-right font-bold">פעולות</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredGuests.length > 0 ? (
-              filteredGuests.map((guest) => {
-                const statusOptions = [
-                  { value: "אישר הגעה", label: "אישר הגעה" },
-                  { value: "טרם אישר", label: "טרם אישר" },
-                  { value: "לא מגיע", label: "לא מגיע" },
-                ];
-
-                const foodOptions = [
-                  { value: "רגיל", label: "רגיל" },
-                  { value: "צמחוני", label: "צמחוני" },
-                  { value: "טבעוני", label: "טבעוני" },
-                  { value: "ללא גלוטן", label: "ללא גלוטן" },
-                  { value: "-", label: "לא רלוונטי" },
-                ];
-
-                return (
-                  <TableRow key={guest.id} className="group">
-                    <TableCell className="font-medium">
-                      <EditableCell
-                        value={guest.name}
-                        onChange={(value) =>
-                          handleUpdateField(guest, "name", value)
-                        }
-                        onSave={() => {}}
-                        type="text"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <EditableCell
-                        value={guest.phone}
-                        onChange={(value) =>
-                          handleUpdateField(guest, "phone", value)
-                        }
-                        onSave={() => {}}
-                        type="text"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <EditableCell
-                        value={guest.guests}
-                        onChange={(value) =>
-                          handleUpdateField(guest, "guests", value)
-                        }
-                        onSave={() => {}}
-                        type="number"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <EditableCell
-                        value={guest.status}
-                        onChange={(value) =>
-                          handleUpdateField(guest, "status", value)
-                        }
-                        onSave={() => {}}
-                        type="select"
-                        options={statusOptions}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <EditableCell
-                        value={guest.food}
-                        onChange={(value) =>
-                          handleUpdateField(guest, "food", value)
-                        }
-                        onSave={() => {}}
-                        type="select"
-                        options={foodOptions}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive"
-                          onClick={() => handleDelete(guest)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="text-center py-6 text-muted-foreground"
-                >
-                  לא נמצאו מוזמנים התואמים את החיפוש
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
+      {/* Mobile card view */}
       <div className="md:hidden mt-4">
         {filteredGuests.length > 0 ? (
-          filteredGuests.map((guest) => renderGuestCard(guest))
+          filteredGuests.map((guest) => (
+            <GuestCard
+              key={guest.id}
+              guest={guest}
+              handleUpdateField={handleUpdateField}
+              handleDelete={handleDelete}
+              getStatusColorClass={getStatusColorClass}
+            />
+          ))
         ) : (
           <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-md">
             לא נמצאו מוזמנים התואמים את החיפוש
@@ -1090,213 +634,32 @@ const DashboardGuests = () => {
         )}
       </div>
 
-      {/* Delete Guest Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-            <X className="h-4 w-4" />
-            <span className="sr-only">סגור</span>
-          </DialogClose>
-          <DialogHeader>
-            <DialogTitle className="text-right">מחיקת מוזמן</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-center">
-              האם אתה בטוח שברצונך למחוק את {guestToDelete?.name} מרשימת
-              המוזמנים?
-            </p>
-          </div>
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteDialogOpen(false)}
-            >
-              ביטול
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDelete}
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-              מחק
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Dialogs */}
+      <DeleteGuestDialog
+        isOpen={isDeleteDialogOpen}
+        setIsOpen={setIsDeleteDialogOpen}
+        guestToDelete={guestToDelete}
+        confirmDelete={confirmDelete}
+        isLoading={isLoading}
+      />
 
-      {/* Add Guest Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-            <X className="h-4 w-4" />
-            <span className="sr-only">סגור</span>
-          </DialogClose>
-          <DialogHeader>
-            <DialogTitle className="text-right">הוספת מוזמן חדש</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right col-span-1">שם מלא</Label>
-              <Input
-                value={newGuest.name}
-                onChange={(e) =>
-                  setNewGuest({ ...newGuest, name: e.target.value })
-                }
-                className="col-span-3 text-right"
-                placeholder="הכנס שם מלא"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right col-span-1">טלפון</Label>
-              <Input
-                value={newGuest.phone}
-                onChange={(e) =>
-                  setNewGuest({ ...newGuest, phone: e.target.value })
-                }
-                className="col-span-3 text-right"
-                placeholder="050-1234567"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right col-span-1">מספר אורחים</Label>
-              <Input
-                type="number"
-                min="1"
-                value={newGuest.guests}
-                onChange={(e) =>
-                  setNewGuest({
-                    ...newGuest,
-                    guests: parseInt(e.target.value) || 1,
-                  })
-                }
-                className="col-span-3 text-right"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right col-span-1">סטטוס</Label>
-              <Select
-                value={newGuest.status}
-                onValueChange={(value) =>
-                  setNewGuest({ ...newGuest, status: value })
-                }
-              >
-                <SelectTrigger className="col-span-3 text-right">
-                  <SelectValue placeholder="בחר סטטוס" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="אישר הגעה">אישר הגעה</SelectItem>
-                  <SelectItem value="טרם אישר">טרם אישר</SelectItem>
-                  <SelectItem value="לא מגיע">לא מגיע</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right col-span-1">העדפת אוכל</Label>
-              <Select
-                value={newGuest.food}
-                onValueChange={(value) =>
-                  setNewGuest({ ...newGuest, food: value })
-                }
-              >
-                <SelectTrigger className="col-span-3 text-right">
-                  <SelectValue placeholder="בחר העדפת אוכל" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="רגיל">רגיל</SelectItem>
-                  <SelectItem value="צמחוני">צמחוני</SelectItem>
-                  <SelectItem value="טבעוני">טבעוני</SelectItem>
-                  <SelectItem value="-">לא רלוונטי</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
-              ביטול
-            </Button>
-            <Button
-              onClick={handleAddGuest}
-              disabled={isLoading}
-              className="bg-wedding-primary hover:bg-wedding-accent text-white"
-            >
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
-              הוסף מוזמן
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddGuestDialog
+        isOpen={isAddDialogOpen}
+        setIsOpen={setIsAddDialogOpen}
+        newGuest={newGuest as Guest}
+        setNewGuest={setNewGuest as (guest: Guest) => void}
+        handleAddGuest={handleAddGuest}
+        isLoading={isLoading}
+      />
 
-      {/* Import Dialog */}
-      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-            <X className="h-4 w-4" />
-            <span className="sr-only">סגור</span>
-          </DialogClose>
-          <DialogHeader>
-            <DialogTitle className="text-right">
-              ייבוא מוזמנים מאקסל
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-gray-500 mb-6 text-right">
-              העלה קובץ אקסל עם רשימת מוזמנים. הקובץ צריך להכיל עמודות "שם"
-              ו"טלפון". מספרי טלפון זהים לא יתווספו בשנית. ניתן להוריד תבנית
-              לדוגמה.
-            </p>
-
-            <div className="flex justify-center mb-4">
-              <Button
-                variant="outline"
-                className="flex gap-2"
-                onClick={downloadExcelTemplate}
-              >
-                <FilePlus className="h-4 w-4 ml-1" />
-                הורד תבנית לדוגמה
-              </Button>
-            </div>
-
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept=".xlsx,.xls"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-
-              {isImporting ? (
-                <div className="text-center">
-                  <Loader2 className="h-10 w-10 animate-spin mx-auto mb-2 text-wedding-primary" />
-                  <p>מייבא מוזמנים...</p>
-                </div>
-              ) : (
-                <div>
-                  <FileUp className="h-10 w-10 mx-auto mb-2 text-gray-400" />
-                  <p className="mb-2">גרור קובץ לכאן או</p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="bg-wedding-primary/10 hover:bg-wedding-primary/20 border-wedding-primary/20 text-wedding-dark"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    בחר קובץ
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setIsImportDialogOpen(false)}
-            >
-              ביטול
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ImportGuestsDialog
+        isOpen={isImportDialogOpen}
+        setIsOpen={setIsImportDialogOpen}
+        isImporting={isImporting}
+        downloadExcelTemplate={downloadExcelTemplate}
+        handleFileChange={handleFileChange}
+        fileInputRef={fileInputRef}
+      />
     </div>
   );
 };
