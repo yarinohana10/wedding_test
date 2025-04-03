@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Table,
@@ -35,15 +34,13 @@ const GuestsTable: React.FC<GuestsTableProps> = ({
   handleDelete,
 }) => {
   return (
-    <div className="md:hidden rounded-md border border-wedding-primary/20 bg-white">
+    <div className="border border-wedding-primary/20 bg-white">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="text-right font-bold">שם מלא</TableHead>
             <TableHead className="text-right font-bold">מספר טלפון</TableHead>
-            <TableHead className="text-right font-bold">
-              כמות אורחים
-            </TableHead>
+            <TableHead className="text-right font-bold">כמות אורחים</TableHead>
             <TableHead className="text-right font-bold">סטטוס</TableHead>
             <TableHead className="text-right font-bold">העדפת אוכל</TableHead>
             <TableHead className="text-right font-bold">פעולות</TableHead>

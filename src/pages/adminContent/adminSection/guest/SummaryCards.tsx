@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, UserMinus } from "lucide-react";
@@ -14,15 +13,15 @@ interface SummaryProps {
   guestsLength: number;
 }
 
-const SummaryCards: React.FC<SummaryProps> = ({ 
-  summary, 
-  filterByStatus, 
-  guestsLength 
+const SummaryCards: React.FC<SummaryProps> = ({
+  summary,
+  filterByStatus,
+  guestsLength,
 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-      <Card 
-        className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+      <Card
+        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
         onClick={() => filterByStatus("אישר הגעה")}
       >
         <h3 className="text-lg font-medium text-right">אישרו הגעה</h3>
@@ -37,8 +36,8 @@ const SummaryCards: React.FC<SummaryProps> = ({
         </div>
       </Card>
 
-      <Card 
-        className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+      <Card
+        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
         onClick={() => filterByStatus("לא מגיע")}
       >
         <h3 className="text-lg font-medium text-right">לא מגיעים</h3>
@@ -53,8 +52,8 @@ const SummaryCards: React.FC<SummaryProps> = ({
         </div>
       </Card>
 
-      <Card 
-        className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+      <Card
+        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
         onClick={() => filterByStatus("טרם אישר")}
       >
         <h3 className="text-lg font-medium text-right">טרם אישרו</h3>
@@ -80,8 +79,8 @@ const SummaryCards: React.FC<SummaryProps> = ({
         </div>
       </Card>
 
-      <Card 
-        className="p-4 border-wedding-primary/20 bg-wedding-light cursor-pointer"
+      <Card
+        className="p-4 hover:scale-[1.02] hover:bg-wedding-accent/20 border-wedding-primary/20 bg-wedding-primary/40 cursor-pointer"
         onClick={() => filterByStatus("all")}
       >
         <h3 className="text-lg font-medium text-right">סה"כ הזמנות</h3>
@@ -92,9 +91,7 @@ const SummaryCards: React.FC<SummaryProps> = ({
             </span>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold">
-              {summary.totalGuests}
-            </p>
+            <p className="text-3xl font-bold">{summary.totalGuests}</p>
             <p className="text-sm text-gray-500">סה"כ אנשים</p>
           </div>
         </div>

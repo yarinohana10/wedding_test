@@ -615,26 +615,6 @@ const DashboardGuests = () => {
         handleDelete={handleDelete}
       />
 
-      {/* Mobile card view */}
-      <div className="md:hidden mt-4">
-        {filteredGuests.length > 0 ? (
-          filteredGuests.map((guest) => (
-            <GuestCard
-              key={guest.id}
-              guest={guest}
-              handleUpdateField={handleUpdateField}
-              handleDelete={handleDelete}
-              getStatusColorClass={getStatusColorClass}
-            />
-          ))
-        ) : (
-          <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-md">
-            לא נמצאו מוזמנים התואמים את החיפוש
-          </div>
-        )}
-      </div>
-
-      {/* Dialogs */}
       <DeleteGuestDialog
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}

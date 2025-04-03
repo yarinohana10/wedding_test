@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +45,11 @@ const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
         </div>
 
         <div className="flex-shrink-0">
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <Select
+            dir="rtl"
+            value={filterStatus}
+            onValueChange={setFilterStatus}
+          >
             <SelectTrigger className="w-full md:w-[180px]">
               <div className="flex items-center">
                 <Filter className="h-4 w-4 ml-2" />
