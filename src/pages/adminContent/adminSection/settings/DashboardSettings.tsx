@@ -18,6 +18,7 @@ import HeroImagesSection from "@/pages/adminContent/adminSection/settings/HeroIm
 import GalleryManager from "@/pages/adminContent/adminSection/settings/GalleryManager";
 import MessageTemplates from "@/pages/adminContent/adminSection/settings/MessageTemplates";
 import { fetchEventSettings } from "@/services/eventSettingsService";
+import { fetchPhotos } from "@/services/photoService";
 import { defaultWeddingData } from "@/pages/Index";
 
 const DashboardSettings = () => {
@@ -71,6 +72,9 @@ const DashboardSettings = () => {
           
           setPreviewHeroImages(settings.hero_images || []);
         }
+        
+        // Fetch photos too for the gallery manager
+        await fetchPhotos();
       } catch (error) {
         console.error("Error loading settings:", error);
         toast({
@@ -171,7 +175,7 @@ const DashboardSettings = () => {
         </div>
       </div>
 
-      <Card className="rtl">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <span>הגדרות אירוע</span>

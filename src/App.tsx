@@ -1,4 +1,3 @@
-
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +19,6 @@ import Privacy from "./pages/userContent/leagalContent/Privacy";
 import Terms from "./pages/userContent/leagalContent/Terms";
 import Location from "./pages/userContent/Location";
 import DashboardLayout from "./pages/adminContent/adminSection/DashboardLayout";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -43,11 +41,7 @@ const App = () => (
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Dashboard Routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }>
+          <Route path="/dashboard"  element={<DashboardLayout />}>
             <Route index element={<DashboardGuests />} />
             <Route path="settings" element={<DashboardSettings />} />
             <Route path="help" element={<NotFound />} />

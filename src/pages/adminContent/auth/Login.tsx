@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ArrowRight, CheckCircle, HomeIcon } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { signInWithEmail } from "@/utils/authUtils";
-import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationState {
   emailConfirmation?: boolean;
@@ -23,7 +22,6 @@ const Login = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
 
   useEffect(() => {
     // Check for email confirmation message from registration
@@ -32,13 +30,6 @@ const Login = () => {
       setShowEmailConfirmation(true);
     }
   }, [location]);
-
-  useEffect(() => {
-    // Redirect to dashboard if already logged in
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +43,20 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const { success, error } = await signInWithEmail(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
       
-      if (!success) {
-        throw new Error(error);
-      }
+      if (error) throw error;
       
-      // No need to redirect here - AuthContext will do it
+      toast({
+        title: "התחברת בהצלחה",
+        description: "מועבר לדשבורד...",
+      });
+      
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err: any) {
       console.error(err);
       

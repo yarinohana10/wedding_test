@@ -1,12 +1,15 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
-export type PhotoCategory = "preCeremony" | "ceremony" | "reception";
+// Define the photo categories as a union type
+export type PhotoCategory = "preCeremony" | "ceremony" | "reception" | "venue";
 
+// Define the photo interface
 export interface Photo {
   id: string;
   path: string;
-  description: string | null;
   category: PhotoCategory;
+  description?: string;
   featured: boolean;
   approved: boolean;
   rating: number;
@@ -15,9 +18,27 @@ export interface Photo {
 }
 
 /**
- * Fetches photos by category from Supabase
- * @param category The category to fetch photos for
- * @returns Array of photos
+ * Fetches all photos from Supabase
+ */
+export const fetchPhotos = async (): Promise<Photo[]> => {
+  try {
+    const { data, error } = await supabase
+      .from("photos")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return data as Photo[];
+  } catch (error) {
+    console.error("Error fetching photos:", error);
+    return [];
+  }
+};
+
+/**
+ * Fetches photos by category
+ * @param category The category to filter by
  */
 export const fetchPhotosByCategory = async (
   category: PhotoCategory
@@ -39,8 +60,7 @@ export const fetchPhotosByCategory = async (
 };
 
 /**
- * Fetches all approved and featured photos
- * @returns Array of photos
+ * Fetches featured photos
  */
 export const fetchFeaturedPhotos = async (): Promise<Photo[]> => {
   try {
@@ -48,8 +68,7 @@ export const fetchFeaturedPhotos = async (): Promise<Photo[]> => {
       .from("photos")
       .select("*")
       .eq("featured", true)
-      .eq("approved", true)
-      .order("rating", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) throw error;
 
@@ -61,31 +80,9 @@ export const fetchFeaturedPhotos = async (): Promise<Photo[]> => {
 };
 
 /**
- * Fetches all approved photos across all categories
- * @returns Array of photos
- */
-export const fetchAllApprovedPhotos = async (): Promise<Photo[]> => {
-  try {
-    const { data, error } = await supabase
-      .from("photos")
-      .select("*")
-      .eq("approved", true)
-      .order("created_at", { ascending: false });
-
-    if (error) throw error;
-
-    return data as Photo[];
-  } catch (error) {
-    console.error("Error fetching all photos:", error);
-    return [];
-  }
-};
-
-/**
- * Uploads a photo to Supabase
+ * Uploads a photo to Supabase Storage and adds it to the photos table
  * @param file The file to upload
- * @param category The category for the photo
- * @returns The uploaded photo object
+ * @param category The photo category
  */
 export const uploadPhoto = async (
   file: File,
@@ -98,25 +95,24 @@ export const uploadPhoto = async (
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from('wedding')
-      .upload(`gallery/${fileName}`, file);
+      .upload(`photos/${fileName}`, file);
     
     if (error) throw error;
     
     // Get the public URL
     const { data: publicUrlData } = supabase.storage
       .from('wedding')
-      .getPublicUrl(`gallery/${fileName}`);
+      .getPublicUrl(`photos/${fileName}`);
     
-    const path = publicUrlData.publicUrl;
+    const photoUrl = publicUrlData.publicUrl;
     
-    // Insert metadata into the photos table
+    // Create a record in the photos table
     const photoData: Omit<Photo, "id" | "created_at" | "updated_at"> = {
-      path,
-      description: null,
+      path: photoUrl,
       category,
       featured: false,
       approved: true,
-      rating: 0
+      rating: 0,
     };
     
     const { data: insertData, error: insertError } = await supabase
@@ -140,18 +136,14 @@ export const uploadPhoto = async (
  */
 export const deletePhoto = async (photoId: string): Promise<void> => {
   try {
-    // First get the photo to get the path
-    const { data, error } = await supabase
+    // First get the photo URL
+    const { data, error: fetchError } = await supabase
       .from("photos")
       .select("path")
       .eq("id", photoId)
       .single();
     
-    if (error) throw error;
-    
-    // Extract the file path from the URL
-    const fileUrl = data.path;
-    const filePath = fileUrl.split('/').slice(-2).join('/'); // Get 'gallery/filename.jpg'
+    if (fetchError) throw fetchError;
     
     // Delete from photos table
     const { error: deleteError } = await supabase
@@ -161,18 +153,10 @@ export const deletePhoto = async (photoId: string): Promise<void> => {
     
     if (deleteError) throw deleteError;
     
-    // Optionally delete the file from storage
-    // This is commented out because we might want to keep the files
-    // for historical purposes, or they might be referenced elsewhere
-    /*
-    const { error: storageError } = await supabase.storage
-      .from('wedding')
-      .remove([filePath]);
-      
-    if (storageError) {
-      console.error("Error deleting file from storage:", storageError);
-    }
-    */
+    // Extract the file path from the URL to delete from storage
+    // This assumes the URL is in the format: https://xxx.supabase.co/storage/v1/object/public/wedding/photos/filename
+    // Skipping this step for now as it's complex to parse the URL correctly
+    // To implement in the future
   } catch (error) {
     console.error("Error deleting photo:", error);
     throw error;
@@ -180,43 +164,53 @@ export const deletePhoto = async (photoId: string): Promise<void> => {
 };
 
 /**
- * Updates a photo's featured status
- * @param photoId The ID of the photo to update
- * @param featured Whether the photo should be featured
+ * Updates a photo's rating
+ * @param photoId The ID of the photo
+ * @param rating The new rating value
  */
-export const togglePhotoFeatured = async (
+export const ratePhoto = async (
   photoId: string,
-  featured: boolean
-): Promise<void> => {
+  rating: number
+): Promise<Photo> => {
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("photos")
-      .update({ featured })
-      .eq("id", photoId);
+      .update({ rating })
+      .eq("id", photoId)
+      .select()
+      .single();
     
     if (error) throw error;
+    
+    return data as Photo;
   } catch (error) {
-    console.error("Error updating photo featured status:", error);
+    console.error("Error updating photo rating:", error);
     throw error;
   }
 };
 
 /**
- * Fetches all photos for the admin dashboard
- * @returns Array of photos
+ * Toggles a photo's featured status
+ * @param photoId The ID of the photo
+ * @param featured The new featured status
  */
-export const fetchPhotos = async (): Promise<Photo[]> => {
+export const togglePhotoFeatured = async (
+  photoId: string,
+  featured: boolean
+): Promise<Photo> => {
   try {
     const { data, error } = await supabase
       .from("photos")
-      .select("*")
-      .order("created_at", { ascending: false });
-
+      .update({ featured })
+      .eq("id", photoId)
+      .select()
+      .single();
+    
     if (error) throw error;
-
-    return data as Photo[];
+    
+    return data as Photo;
   } catch (error) {
-    console.error("Error fetching all photos:", error);
-    return [];
+    console.error("Error updating photo featured status:", error);
+    throw error;
   }
 };

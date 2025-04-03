@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,8 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ArrowRight, HomeIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { signUpWithEmail } from "@/utils/authUtils";
-import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -18,14 +17,6 @@ const Register = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    // Redirect to dashboard if already logged in
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,19 +40,28 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      const { success, error } = await signUpWithEmail(email, password);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        }
+      });
       
-      if (!success) {
-        throw new Error(error);
-      }
+      if (error) throw error;
       
       toast({
         title: "הרשמה בוצעה בהצלחה",
         description: "נשלח אימייל לאימות החשבון שלך",
       });
       
-      // Redirect to login page for email confirmation message
-      navigate('/login', { state: { emailConfirmation: true } });
+      // If auto-confirm is enabled (likely in development), redirect to dashboard
+      if (data.session) {
+        navigate('/dashboard');
+      } else {
+        // Redirect to login page for email confirmation message
+        navigate('/login', { state: { emailConfirmation: true } });
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'אירעה שגיאה בעת ההרשמה');
