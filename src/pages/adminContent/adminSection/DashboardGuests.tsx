@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, X } from "lucide-react";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 import EditableCell from "@/components/guests/EditableCell";
 import GuestCard from "@/components/guests/GuestCard";
