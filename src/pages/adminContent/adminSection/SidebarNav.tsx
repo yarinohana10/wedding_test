@@ -1,42 +1,67 @@
+
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { NavItem } from "../DashboardLayout";
+import { useLocation } from "react-router-dom";
+import { DashboardNavProps } from "@/pages/adminContent/adminSection/DashboardLayout";
+import { Heart, Home, Settings, Users, Mail, HelpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-interface SidebarNavProps {
-  items: NavItem[];
-}
+const SidebarNav = ({ className, ...props }: DashboardNavProps) => {
+  const { pathname } = useLocation();
 
-export function SidebarNav({ items }: SidebarNavProps) {
-  const location = useLocation();
+  const links = [
+    {
+      title: "כללי",
+      href: "/dashboard/",
+      icon: <Home className="h-4 w-4 ml-2" />,
+    },
+    {
+      title: "מוזמנים",
+      href: "/dashboard/guests",
+      icon: <Users className="h-4 w-4 ml-2" />,
+    },
+    {
+      title: "הודעות",
+      href: "/dashboard/messages",
+      icon: <Mail className="h-4 w-4 ml-2" />,
+    },
+    {
+      title: "הגדרות",
+      href: "/dashboard/settings",
+      icon: <Settings className="h-4 w-4 ml-2" />,
+    },
+    {
+      title: "עזרה ותמיכה",
+      href: "/dashboard/help",
+      icon: <HelpCircle className="h-4 w-4 ml-2" />,
+    },
+  ];
 
   return (
-    <nav className="grid items-start gap-2 px-2 text-sm font-medium">
-      {items.map((item, index) => {
-        const Icon = item.icon;
-        const isActive =
-          location.pathname === item.href ||
-          (item.href !== "/dashboard" &&
-            location.pathname.startsWith(item.href));
-
-        return (
-          <Link
-            key={index}
-            to={item.href}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-colors",
-              isActive
-                ? "bg-muted text-foreground"
-                : "hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <Icon
-              className={cn("h-4 w-4", isActive ? "text-foreground" : "")}
-            />
-            <span>{item.title}</span>
-          </Link>
-        );
-      })}
+    <nav
+      className={cn("flex md:flex-col space-y-0 md:space-y-1 space-x-0", className)}
+      {...props}
+    >
+      {links.map((link) => (
+        <Button
+          key={link.href}
+          variant={link.href === pathname ? "secondary" : "ghost"}
+          className={cn(
+            "justify-start w-full text-right hover:bg-wedding-primary/10",
+            link.href === pathname
+              ? "bg-wedding-primary/10 text-wedding-primary font-medium hover:bg-wedding-primary/20"
+              : ""
+          )}
+          asChild
+        >
+          <a href={link.href} className="flex items-center">
+            {link.icon}
+            <span className="hidden md:inline">{link.title}</span>
+          </a>
+        </Button>
+      ))}
     </nav>
   );
-}
+};
+
+export default SidebarNav;
