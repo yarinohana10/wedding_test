@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
-import EditableCell from "./EditableCell";
+import EditableCell from "./table/EditableCell";
 
 interface Guest {
   id: string;

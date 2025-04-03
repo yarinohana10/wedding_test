@@ -6,14 +6,13 @@ import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
-import EditableCell from "@/components/guests/EditableCell";
-import GuestCard from "@/components/guests/GuestCard";
-import SummaryCards from "@/components/guests/SummaryCards";
-import GuestsTable from "@/components/guests/GuestsTable";
-import SearchAndFilterBar from "@/components/guests/SearchAndFilterBar";
-import AddGuestDialog from "@/components/guests/dialogs/AddGuestDialog";
-import DeleteGuestDialog from "@/components/guests/dialogs/DeleteGuestDialog";
-import ImportGuestsDialog from "@/components/guests/dialogs/ImportGuestsDialog";
+import SummaryCards from "@/pages/adminContent/adminSection/guest/SummaryCards";
+import SearchAndFilterBar from "@/pages/adminContent/adminSection/guest/table/SearchAndFilterBar";
+import AddGuestDialog from "@/pages/adminContent/adminSection/guest/dialogs/AddGuestDialog";
+import DeleteGuestDialog from "@/pages/adminContent/adminSection/guest/dialogs/DeleteGuestDialog";
+import ImportGuestsDialog from "@/pages/adminContent/adminSection/guest/dialogs/ImportGuestsDialog";
+import GuestCard from "./GuestCard";
+import GuestsTable from "./table/GuestsTable";
 
 interface Guest {
   id: string;

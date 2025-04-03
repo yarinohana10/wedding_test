@@ -1,9 +1,8 @@
-
 import { Outlet, useNavigate } from "react-router-dom";
 import { HomeIcon } from "lucide-react";
-import SidebarNav from "./SidebarNav";
-import MobileNavigation from "./MobileNavigation";
+import SidebarNav from "./sidebar/SidebarNav";
 import { Button } from "@/components/ui/button";
+import MobileNavigation from "./sidebar/MobileNavigation";
 
 const DashboardLayout = () => {
   const navigate = useNavigate();

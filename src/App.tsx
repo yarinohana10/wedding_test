@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import NotFound from "./components/NotFound";
-import DashboardGuests from "./pages/adminContent/adminSection/DashboardGuests";
-import DashboardSettings from "./pages/adminContent/adminSection/DashboardSettings";
+import DashboardGuests from "./pages/adminContent/adminSection/guest/DashboardGuests";
+import DashboardSettings from "./pages/adminContent/adminSection/settings/DashboardSettings";
 import ForgotPassword from "./pages/adminContent/auth/ForgotPassword";
 import Login from "./pages/adminContent/auth/Login";
 import Register from "./pages/adminContent/auth/Register";
