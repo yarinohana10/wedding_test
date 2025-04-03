@@ -1,12 +1,11 @@
 
 import React, { useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
-
-import { UsersRound, Settings, LogOut, Menu, X, HomeIcon } from "lucide-react";
+import { LogOut, HomeIcon } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SidebarNav from "./SidebarNav";
+import MobileNavigation from "./MobileNavigation";
 
 export interface NavItem {
   title: string;
@@ -22,16 +21,20 @@ const dashboardNavItems: NavItem[] = [
   {
     title: "ניהול מוזמנים",
     href: "/dashboard/guests",
-    icon: UsersRound,
+    icon: function UsersIcon({ className }: { className?: string }) {
+      return <span className={className}>👥</span>;
+    },
   },
   {
     title: "הגדרות",
     href: "/dashboard/settings",
-    icon: Settings,
+    icon: function SettingsIcon({ className }: { className?: string }) {
+      return <span className={className}>⚙️</span>;
+    },
   },
 ];
 
-function DashboardLayout() {
+const DashboardLayout: React.FC = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,6 +101,6 @@ function DashboardLayout() {
       </div>
     </div>
   );
-}
+};
 
 export default DashboardLayout;
