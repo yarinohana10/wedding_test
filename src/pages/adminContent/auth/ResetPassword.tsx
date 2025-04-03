@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { updatePassword } from "@/utils/authUtils";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -43,9 +43,11 @@ const ResetPassword = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.updateUser({ password });
+      const { success, error } = await updatePassword(password);
       
-      if (error) throw error;
+      if (!success) {
+        throw new Error(error);
+      }
       
       setIsSuccess(true);
       toast({

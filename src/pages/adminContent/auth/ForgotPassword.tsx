@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ArrowRight, CheckCircle, HomeIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { resetPassword } from "@/utils/authUtils";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,11 +31,11 @@ const ForgotPassword = () => {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      const { success, error } = await resetPassword(email);
       
-      if (error) throw error;
+      if (!success) {
+        throw new Error(error);
+      }
       
       setIsSubmitted(true);
       toast({

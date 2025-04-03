@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { Json } from "@/types/supabase";
 
 export interface EventSettings {
   id: string;
