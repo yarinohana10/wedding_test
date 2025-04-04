@@ -54,7 +54,6 @@ const Register = () => {
         title: "הרשמה בוצעה בהצלחה",
         description: "נשלח אימייל לאימות החשבון שלך",
       });
-      
       // If auto-confirm is enabled (likely in development), redirect to dashboard
       if (data.session) {
         navigate('/dashboard');
